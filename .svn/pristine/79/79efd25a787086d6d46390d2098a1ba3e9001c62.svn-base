@@ -1,0 +1,117 @@
+﻿namespace ipmsg_alert
+{
+    partial class SettingForm
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            this.btnCloseSF = new System.Windows.Forms.Button();
+            this.chboxSend = new System.Windows.Forms.CheckBox();
+            this.chboxReceive = new System.Windows.Forms.CheckBox();
+            this.chboxOpen = new System.Windows.Forms.CheckBox();
+            this.chboxMayuko = new System.Windows.Forms.CheckBox();
+            this.SuspendLayout();
+            // 
+            // btnCloseSF
+            // 
+            this.btnCloseSF.Location = new System.Drawing.Point(63, 115);
+            this.btnCloseSF.Name = "btnCloseSF";
+            this.btnCloseSF.Size = new System.Drawing.Size(75, 23);
+            this.btnCloseSF.TabIndex = 0;
+            this.btnCloseSF.Text = "Close";
+            this.btnCloseSF.UseVisualStyleBackColor = true;
+            this.btnCloseSF.Click += new System.EventHandler(this.btnClose_Click);
+            // 
+            // chboxSend
+            // 
+            this.chboxSend.AutoSize = true;
+            this.chboxSend.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.chboxSend.Location = new System.Drawing.Point(25, 12);
+            this.chboxSend.Name = "chboxSend";
+            this.chboxSend.Size = new System.Drawing.Size(61, 20);
+            this.chboxSend.TabIndex = 1;
+            this.chboxSend.Text = "Send";
+            this.chboxSend.UseVisualStyleBackColor = true;
+            // 
+            // chboxReceive
+            // 
+            this.chboxReceive.AutoSize = true;
+            this.chboxReceive.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.chboxReceive.Location = new System.Drawing.Point(25, 44);
+            this.chboxReceive.Name = "chboxReceive";
+            this.chboxReceive.Size = new System.Drawing.Size(80, 20);
+            this.chboxReceive.TabIndex = 2;
+            this.chboxReceive.Text = "Receive";
+            this.chboxReceive.UseVisualStyleBackColor = true;
+            // 
+            // chboxOpen
+            // 
+            this.chboxOpen.AutoSize = true;
+            this.chboxOpen.Font = new System.Drawing.Font("MS UI Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.chboxOpen.Location = new System.Drawing.Point(25, 80);
+            this.chboxOpen.Name = "chboxOpen";
+            this.chboxOpen.Size = new System.Drawing.Size(62, 20);
+            this.chboxOpen.TabIndex = 3;
+            this.chboxOpen.Text = "Open";
+            this.chboxOpen.UseVisualStyleBackColor = true;
+            // 
+            // chboxMayuko
+            // 
+            this.chboxMayuko.AutoSize = true;
+            this.chboxMayuko.Location = new System.Drawing.Point(119, 80);
+            this.chboxMayuko.Name = "chboxMayuko";
+            this.chboxMayuko.Size = new System.Drawing.Size(63, 16);
+            this.chboxMayuko.TabIndex = 4;
+            this.chboxMayuko.Text = "mayuko";
+            this.chboxMayuko.UseVisualStyleBackColor = true;
+            // 
+            // SettingForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(194, 150);
+            this.Controls.Add(this.chboxMayuko);
+            this.Controls.Add(this.chboxOpen);
+            this.Controls.Add(this.chboxReceive);
+            this.Controls.Add(this.chboxSend);
+            this.Controls.Add(this.btnCloseSF);
+            this.Name = "SettingForm";
+            this.Text = "Setting";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SettingForm_FormClosed);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Button btnCloseSF;
+        private System.Windows.Forms.CheckBox chboxSend;
+        private System.Windows.Forms.CheckBox chboxReceive;
+        private System.Windows.Forms.CheckBox chboxOpen;
+        private System.Windows.Forms.CheckBox chboxMayuko;
+    }
+}
