@@ -299,9 +299,7 @@ namespace ipmsg_alert
                     //バルーンヒントのタイトル
                     notifyIcon1.BalloonTipTitle = notice;
                     //バルーンヒントに表示するメッセージ
-
-                    notifyIcon1.BalloonTipText = localNameDic.ContainsKey(noticeNameIP) ? localNameDic[noticeNameIP] : "誰？";
-                    
+                    notifyIcon1.BalloonTipText = localNameDic[noticeNameIP];
                     //バルーンヒントに表示するアイコン
                     notifyIcon1.BalloonTipIcon = ToolTipIcon.None;
                     //バルーンヒントを表示する
@@ -318,7 +316,15 @@ namespace ipmsg_alert
         {
             watchFlgDic = SettingForm.showSettingForm( watchFlgDic );
 
-            picBoxMayuko.ImageLocation = mykFlg ? @"myk.bmp" : null;
+            if (mykFlg == true)
+            {
+                picBoxMayuko.ImageLocation = @"myk.bmp";
+            }
+            else
+            {
+                picBoxMayuko.Image = null;
+
+            }
         }
 
         private void versionToolStripMenuItem_Click(object sender, EventArgs e)
@@ -335,12 +341,13 @@ namespace ipmsg_alert
             Application.Exit();
         }
 
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void mayukoView()
         {
-            device.StopCapture();
-            device.Close();
-            
-            Application.Exit();
+            picBoxMayuko.ImageLocation = @"myk.bmp";
         }
+
+
+
+
     }
 }
