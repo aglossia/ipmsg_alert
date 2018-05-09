@@ -35,17 +35,17 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.btnExit = new System.Windows.Forms.Button();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.ttContext = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.menuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.versionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.picBoxMayuko = new System.Windows.Forms.PictureBox();
-            this.ttContext = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ttContext.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBoxMayuko)).BeginInit();
-            this.ttContext.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnWatchOn
@@ -73,9 +73,10 @@
             this.textBox1.Location = new System.Drawing.Point(13, 58);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox1.Size = new System.Drawing.Size(202, 191);
             this.textBox1.TabIndex = 2;
-            this.textBox1.Visible = false;
             // 
             // btnExit
             // 
@@ -94,6 +95,20 @@
             this.notifyIcon1.Text = "ipmsg_alert";
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
+            // 
+            // ttContext
+            // 
+            this.ttContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exitToolStripMenuItem});
+            this.ttContext.Name = "ttContext";
+            this.ttContext.Size = new System.Drawing.Size(99, 26);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // label1
             // 
@@ -146,20 +161,6 @@
             this.picBoxMayuko.TabIndex = 6;
             this.picBoxMayuko.TabStop = false;
             // 
-            // ttContext
-            // 
-            this.ttContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exitToolStripMenuItem});
-            this.ttContext.Name = "ttContext";
-            this.ttContext.Size = new System.Drawing.Size(153, 48);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
             // ipmsg_alert
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -178,10 +179,10 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ipmsg_alert_FormClosed);
             this.Load += new System.EventHandler(this.ipmsg_alert_Load);
             this.ClientSizeChanged += new System.EventHandler(this.ipmsg_alert_ClientSizeChanged);
+            this.ttContext.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBoxMayuko)).EndInit();
-            this.ttContext.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

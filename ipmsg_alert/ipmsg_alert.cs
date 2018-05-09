@@ -14,40 +14,13 @@ namespace ipmsg_alert
 {
     public partial class ipmsg_alert : Form
     {
-        Dictionary<int, string> localNameDic = new Dictionary<int, string>()
-        {
-            {53,"中村智行"},
-            {54,"橋野公洋"},
-            {100,"村上翔"},
-            {101,"二村誠"},
-            {102,"下野達也"},
-            {103,"小川博文"},
-            {104,"亀田甚八"},
-            {105,"増見浩平"},
-            {106,"神重憲夫"},
-            {107,"廣田尚己"},
-            {109,"吉田真介"},
-            {110,"鍵原教克"},
-            {112,"水本健一"},
-            {113,"耕野正昭"},
-            {114,"須賀和美"},
-            {115,"丸山龍一"},
-            {116,"久保田雄亮"},
-            {117,"河本浩宜"},
-            {118,"松井達郎"},
-            {119,"雪丸僚"},
-            {120,"小松立典"},
-            {121,"森野大亮"},
-            {123,"高山裕延"},
-            {126,"赤木真"},
-            {127,"北本敦"},
-            {129,"ULLA(PC167)"},
-        };
+        Dictionary<int, string> localIPDic = new Dictionary<int, string>();
 
         int myIP = 54;
 
         LivePcapDevice device = LivePcapDeviceList.Instance[0];
         static char[] separator = {':'};
+        static char[] separatorName = {'\0'};
         string sep_str = new String(separator);
 
         public bool sendFlg 
@@ -106,17 +79,6 @@ namespace ipmsg_alert
 
         Dictionary<int, bool> watchFlgDic = new Dictionary<int, bool>();
 
-        public string SetMayuko
-        {
-            set
-            {
-                //picBoxMayuko.ImageLocation = value;
-                label1.Text = value;
-            }
-        }
-
-        public static ipmsg_alert IpInstance { get;set;}
-
         public ipmsg_alert()
         {
             InitializeComponent();
@@ -124,6 +86,8 @@ namespace ipmsg_alert
 #if DEBUG
             this.Text = "[DEBUG]";
 #endif
+
+            picBoxMayuko.Visible = false;
 
             // ハンドラ設定
             device.OnPacketArrival += OnPacketArrival;
@@ -144,7 +108,6 @@ namespace ipmsg_alert
 
         private void notifyIcon1_DoubleClick(object sender, EventArgs e)
         {
-            
             // フォームを表示する
             this.Visible = true;
             
@@ -156,7 +119,6 @@ namespace ipmsg_alert
             
             // フォームをアクティブにする
             this.Activate(); 
-
         }
 
         private void ipmsg_alert_ClientSizeChanged(object sender, EventArgs e)
@@ -172,8 +134,15 @@ namespace ipmsg_alert
 
         private void ipmsg_alert_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // トレイリストのアイコンを非表示にする
-            notifyIcon1.Visible = false; 
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+                this.Hide();
+            }
+            else
+            {
+                notifyIcon1.Visible = false;
+            }
         }
 
 
@@ -207,6 +176,8 @@ namespace ipmsg_alert
             device.StopCapture();
             device.Close();
             label1.Text = "stop";
+
+            textBox1.Clear();
         }
 
         private void btnExit_Click(object sender, EventArgs e)
@@ -219,10 +190,11 @@ namespace ipmsg_alert
         }
 
         // イベントハンドラ
-        private  void OnPacketArrival(object sender, CaptureEventArgs e)
+        private void OnPacketArrival(object sender, CaptureEventArgs e)
         {
             // 0:ver(1fix), 1:Packet number, 2:username, 3, hostname, 4:command, 5:addition
             string[] splitted;
+            string[] splittedName;
 
             if(e.Packet.Data[34] == 9 && e.Packet.Data[35] == 121 && e.Packet.Data[36] == 9 && e.Packet.Data[37] == 121)
             {
@@ -237,16 +209,16 @@ namespace ipmsg_alert
 
                 var segment = new ArraySegment<byte>(e.Packet.Data,42,e.Packet.Data.Length - 42);
 
-                var charbyte = new string(segment.Select(x => (char)x).ToArray());
+                string stringbyte = System.Text.Encoding.GetEncoding(932).GetString((segment.ToArray()));
+ 
+                splitted = stringbyte.Split(separator);
 
-                splitted = charbyte.Split(separator);
-
-                Console.WriteLine(int.Parse(splitted[4]));
+                splittedName = splitted[5].Split(separatorName);
 
                 int command = int.Parse(splitted[4]);
 
                 string notice = "";
-                bool flg = true;
+                bool flg = false;
 
                 switch(command & 0xff)
                 {
@@ -254,12 +226,8 @@ namespace ipmsg_alert
                         if (e.Packet.Data[29] == myIP && sendFlg == true)
                         {
                             notice = string.Format("送信したよ\n[{0}]", dtNow.ToLongTimeString());
-
                             noticeNameIP = srcIP;
-                        }
-                        else
-                        {
-                            flg = false;
+                            flg = true;
                         }
 
                         break;
@@ -269,10 +237,7 @@ namespace ipmsg_alert
                         {
                             notice = string.Format("開封したよ [{0}]", dtNow.ToLongTimeString());
                             noticeNameIP = srcIP;
-                        }
-                        else
-                        {
-                            flg = false;
+                            flg = true;
                         }
 
                         break;
@@ -282,15 +247,22 @@ namespace ipmsg_alert
                         {
                             notice = string.Format("受信したよ [{0}]", dtNow.ToLongTimeString());
                             noticeNameIP = dstIP;
-                        }
-                        else
-                        {
-                            flg = false;
+                            flg = true;
                         }
 
                         break;
+
+                    case 0x3:
+
+                        if (!localIPDic.ContainsKey(srcIP)) localIPDic.Add(srcIP,splittedName[0]);
+                        break;
+
+                    case 0x1:
+
+                        if(!localIPDic.ContainsKey(dstIP)) localIPDic.Add(dstIP,splittedName[0]);
+                        break;
+
                     default:
-                        flg = false;
                         break;
                 }
 
@@ -300,16 +272,17 @@ namespace ipmsg_alert
                     notifyIcon1.BalloonTipTitle = notice;
                     //バルーンヒントに表示するメッセージ
 
-                    notifyIcon1.BalloonTipText = localNameDic.ContainsKey(noticeNameIP) ? localNameDic[noticeNameIP] : "誰？";
+                    notifyIcon1.BalloonTipText = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
                     
                     //バルーンヒントに表示するアイコン
                     notifyIcon1.BalloonTipIcon = ToolTipIcon.None;
                     //バルーンヒントを表示する
                     //表示する時間をミリ秒で指定する
-                    notifyIcon1.ShowBalloonTip(30000);
+                    notifyIcon1.ShowBalloonTip(300000);
                 }
                                 
-                //Invoke(new Action<string>((msg) => textBox1.AppendText( msg + Environment.NewLine )),splitted[2]);
+                Invoke(new Action<string>((msg) => textBox1.AppendText( msg + Environment.NewLine )),
+                    splittedName[0] + ":" + splitted[4]);
 
             }
         }
@@ -318,12 +291,29 @@ namespace ipmsg_alert
         {
             watchFlgDic = SettingForm.showSettingForm( watchFlgDic );
 
+            if (mykFlg)
+            {
+                picBoxMayuko.Visible = true;
+                //textBox1.Visible = false;
+            }
+            else
+            {
+                picBoxMayuko.Visible = false;
+                //textBox1.Visible = true;
+            }
+
             picBoxMayuko.ImageLocation = mykFlg ? @"myk.bmp" : null;
         }
 
         private void versionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             VersionForm.showVersionForm();
+
+            foreach (var i in localIPDic)
+            {
+                Console.WriteLine(i.Value);
+            }
+            Console.WriteLine(localIPDic.Count);
         }
 
         private void ipmsg_alert_FormClosed(object sender, FormClosedEventArgs e)

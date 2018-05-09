@@ -13,7 +13,6 @@ namespace ipmsg_alert
     public partial class SettingForm : Form
     {
         static SettingForm fm;
-        static ipmsg_alert ip = new ipmsg_alert();
         public Dictionary<int, bool> returnDic = new Dictionary<int, bool>();
 
         public SettingForm( Dictionary<int, bool> watchFlgDic )
@@ -39,7 +38,6 @@ namespace ipmsg_alert
             returnDic[2] = chboxOpen.Checked;
             returnDic[3] = chboxMayuko.Checked;
 
-            ip.Close();
             this.Close();
         }
 
@@ -56,7 +54,6 @@ namespace ipmsg_alert
 
         private void SettingForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            ip.Close();
             this.Close();
         }
     }
