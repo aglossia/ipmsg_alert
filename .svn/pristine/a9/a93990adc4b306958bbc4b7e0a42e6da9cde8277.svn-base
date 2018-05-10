@@ -148,6 +148,8 @@ namespace ipmsg_alert
 
         private void ipmsg_alert_Load(object sender, EventArgs e)
         {
+
+
             label1.Text = "watching...";
         }
         
@@ -168,11 +170,8 @@ namespace ipmsg_alert
             }
         }
 
-        async private void btnWatchOff_Click(object sender, EventArgs e)
+        private void btnWatchOff_Click(object sender, EventArgs e)
         {
-            // キャプチャ停止中にキャプチャが走るのを防ぐため
-            device.OnPacketArrival -= OnPacketArrival;
-            await Task.Delay(500);
             // キャプチャ停止
             device.StopCapture();
             device.Close();
@@ -181,11 +180,8 @@ namespace ipmsg_alert
             textBox1.Clear();
         }
 
-        async private void btnExit_Click(object sender, EventArgs e)
+        private void btnExit_Click(object sender, EventArgs e)
         {
-            // キャプチャ停止中にキャプチャが走るのを防ぐため
-            device.OnPacketArrival -= OnPacketArrival;
-            await Task.Delay(500);
             // キャプチャ停止
             device.StopCapture();
             device.Close();
@@ -199,10 +195,10 @@ namespace ipmsg_alert
             // 0:ver(1fix), 1:Packet number, 2:username, 3, hostname, 4:command, 5:addition
             string[] splitted;
             string[] splittedName;
-            
+
             if(e.Packet.Data[34] == 9 && e.Packet.Data[35] == 121 && e.Packet.Data[36] == 9 && e.Packet.Data[37] == 121)
             {
-                //Invoke(new Action<bool>((b) => btnExit.Enabled = b),false);
+
                 // 必要な変数を宣言する
                 DateTime dtNow = DateTime.Now;
 
@@ -222,11 +218,7 @@ namespace ipmsg_alert
                 int command = int.Parse(splitted[4]);
 
                 string notice = "";
-                string responseMessage = "?????";
-                string commandMessage = " < " + splitted[4];
                 bool flg = false;
-                bool flg2 = false;
-                bool flgLeave = true;
 
                 switch(command & 0xff)
                 {
@@ -235,7 +227,6 @@ namespace ipmsg_alert
                         {
                             notice = string.Format("送信したよ\n[{0}]", dtNow.ToLongTimeString());
                             noticeNameIP = srcIP;
-                            responseMessage = "送るで";
                             flg = true;
                         }
 
@@ -246,7 +237,6 @@ namespace ipmsg_alert
                         {
                             notice = string.Format("開封したよ [{0}]", dtNow.ToLongTimeString());
                             noticeNameIP = srcIP;
-                            responseMessage = "開けたで";
                             flg = true;
                         }
 
@@ -257,7 +247,6 @@ namespace ipmsg_alert
                         {
                             notice = string.Format("受信したよ [{0}]", dtNow.ToLongTimeString());
                             noticeNameIP = dstIP;
-                            responseMessage = "受け取ったで";
                             flg = true;
                         }
 
@@ -266,32 +255,14 @@ namespace ipmsg_alert
                     case 0x3:
 
                         if (!localIPDic.ContainsKey(srcIP)) localIPDic.Add(srcIP,splittedName[0]);
-                        responseMessage = "おるよー";
-                        flg2 = true;
                         break;
 
                     case 0x1:
-                        if (!localIPDic.ContainsKey(srcIP)) localIPDic.Add(srcIP,splittedName[0]);
-                        responseMessage = "おるかー？";
-                        flg2 = true;
-                        break;
-                    case 0x2:
 
-                        if (localIPDic.ContainsKey(srcIP))
-                        {
-                            localIPDic.Remove(srcIP);
-                        }
-                        else
-                        {
-                            flgLeave = false;
-                        }
-                        
-                        responseMessage = "帰るで";
-                        flg2 = true;
+                        if(!localIPDic.ContainsKey(dstIP)) localIPDic.Add(dstIP,splittedName[0]);
                         break;
+
                     default:
-                        responseMessage = splitted[4];
-                        commandMessage = "";
                         break;
                 }
 
@@ -309,19 +280,11 @@ namespace ipmsg_alert
                     //表示する時間をミリ秒で指定する
                     notifyIcon1.ShowBalloonTip(300000);
                 }
-                //if (flg2)
-                //{
-                //    Invoke(new Action<string>((msg) => textBox1.AppendText( msg + Environment.NewLine )),
-                //        splittedName[0] + "< " + responseMessage);
-                //}                
-                if (flgLeave)
-                {
-                    Invoke(new Action<string>((msg) => textBox1.AppendText( msg + Environment.NewLine )),
-                        splittedName[0] + " < " + responseMessage + commandMessage);
-                }
-                //Invoke(new Action<bool>((b) => btnExit.Enabled = b),true);
+                                
+                Invoke(new Action<string>((msg) => textBox1.AppendText( msg + Environment.NewLine )),
+                    splittedName[0] + ":" + splitted[4]);
+
             }
-            
         }
 
         private void settingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -353,11 +316,8 @@ namespace ipmsg_alert
             Console.WriteLine(localIPDic.Count);
         }
 
-        async private void ipmsg_alert_FormClosed(object sender, FormClosedEventArgs e)
+        private void ipmsg_alert_FormClosed(object sender, FormClosedEventArgs e)
         {
-            // キャプチャ停止中にキャプチャが走るのを防ぐため
-            device.OnPacketArrival -= OnPacketArrival;
-            await Task.Delay(500);
             // キャプチャ停止
             device.StopCapture();
             device.Close();
@@ -365,28 +325,8 @@ namespace ipmsg_alert
             Application.Exit();
         }
 
-        async private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // キャプチャ停止中にキャプチャが走るのを防ぐため
-            device.OnPacketArrival -= OnPacketArrival;
-            await Task.Delay(500);
-            device.StopCapture();
-            device.Close();
-            
-            Application.Exit();
-        }
-
-        private void statusToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            StatusForm.showStatusForm(localIPDic);
-        }
-
-        async private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            // キャプチャ停止中にキャプチャが走るのを防ぐため
-            device.OnPacketArrival -= OnPacketArrival;
-            await Task.Delay(500);
-            // キャプチャ停止
             device.StopCapture();
             device.Close();
             

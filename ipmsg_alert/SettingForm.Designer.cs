@@ -99,6 +99,7 @@
             this.Controls.Add(this.chboxSend);
             this.Controls.Add(this.btnCloseSF);
             this.Name = "SettingForm";
+            this.ShowIcon = false;
             this.Text = "Setting";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SettingForm_FormClosed);
             this.ResumeLayout(false);

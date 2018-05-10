@@ -57,3 +57,4 @@ E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Debug\ipmsg_alert.Properties.Resources.re
 E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Debug\ipmsg_alert.SettingForm.resources
 E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Debug\ipmsg_alert.csproj.GenerateResource.Cache
 E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Debug\ipmsg_alert.VersionForm.resources
+E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Debug\ipmsg_alert.StatusForm.resources
