@@ -15,28 +15,48 @@ namespace ipmsg_alert
         static SettingForm fm;
         public Dictionary<int, bool> returnDic = new Dictionary<int, bool>();
 
+        enum watchEle : int
+        {
+            send,
+            receive,
+            open,
+            leave,
+            _default,
+            detail,
+            myk
+        }
+
         public SettingForm( Dictionary<int, bool> watchFlgDic )
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
-            chboxSend.Checked = watchFlgDic[0];
+            chboxSend.Checked = watchFlgDic[(int)watchEle.send];
 
-            chboxReceive.Checked = watchFlgDic[1];
+            chboxReceive.Checked = watchFlgDic[(int)watchEle.receive];
 
-            chboxOpen.Checked = watchFlgDic[2];
+            chboxOpen.Checked = watchFlgDic[(int)watchEle.open];
 
-            chboxMayuko.Checked = watchFlgDic[3];
+            chboxLeave.Checked = watchFlgDic[(int)watchEle.leave];
+
+            radioDefault.Checked = watchFlgDic[(int)watchEle._default];
+
+            radioDetail.Checked = watchFlgDic[(int)watchEle.detail];
+
+            radioMayuko.Checked = watchFlgDic[(int)watchEle.myk];
 
             returnDic = watchFlgDic;
         }
 
         private void btnClose_Click(object sender, EventArgs e)
         {
-            returnDic[0] = chboxSend.Checked;
-            returnDic[1] = chboxReceive.Checked;
-            returnDic[2] = chboxOpen.Checked;
-            returnDic[3] = chboxMayuko.Checked;
+            returnDic[(int)watchEle.send] = chboxSend.Checked;
+            returnDic[(int)watchEle.receive] = chboxReceive.Checked;
+            returnDic[(int)watchEle.open] = chboxOpen.Checked;
+            returnDic[(int)watchEle.leave] = chboxLeave.Checked;
+            returnDic[(int)watchEle._default] = radioDefault.Checked;
+            returnDic[(int)watchEle.detail] = radioDetail.Checked;
+            returnDic[(int)watchEle.myk] = radioMayuko.Checked;
 
             this.Close();
         }

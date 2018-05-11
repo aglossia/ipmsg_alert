@@ -27,10 +27,10 @@ E:\work\tl\CREATE\ipma\ipmsg_alert\bin\Release\ipmsg_alert.exe
 E:\work\tl\CREATE\ipma\ipmsg_alert\bin\Release\ipmsg_alert.pdb
 E:\work\tl\CREATE\ipma\ipmsg_alert\bin\Release\PacketDotNet.dll
 E:\work\tl\CREATE\ipma\ipmsg_alert\bin\Release\SharpPcap.dll
-E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Release\ipmsg_alert.csprojResolveAssemblyReference.cache
 E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Release\ipmsg_alert.ipmsg_alert.resources
 E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Release\ipmsg_alert.Properties.Resources.resources
 E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Release\ipmsg_alert.SettingForm.resources
 E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Release\ipmsg_alert.VersionForm.resources
 E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Release\ipmsg_alert.csproj.GenerateResource.Cache
 E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Release\ipmsg_alert.StatusForm.resources
+E:\work\tl\CREATE\ipma\ipmsg_alert\obj\Release\ipmsg_alert.csprojResolveAssemblyReference.cache

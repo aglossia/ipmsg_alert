@@ -57,6 +57,42 @@ namespace ipmsg_alert
             }
         }
 
+        public bool leaveFlg
+        {
+            get
+            {
+                return watchFlgDic[(int)watchEle.leave];
+            }
+            set
+            {
+                watchFlgDic[(int)watchEle.leave] = value;
+            }
+        }
+
+        public bool defaultFlg
+        {
+            get
+            {
+                return watchFlgDic[(int)watchEle._default];
+            }
+            set
+            {
+                watchFlgDic[(int)watchEle._default] = value;
+            }
+        }
+
+        public bool detailFlg
+        {
+            get
+            {
+                return watchFlgDic[(int)watchEle.detail];
+            }
+            set
+            {
+                watchFlgDic[(int)watchEle.detail] = value;
+            }
+        }
+
         public bool mykFlg
         {
             get
@@ -74,6 +110,9 @@ namespace ipmsg_alert
             send,
             receive,
             open,
+            leave,
+            _default,
+            detail,
             myk
         }
 
@@ -87,7 +126,11 @@ namespace ipmsg_alert
             this.Text = "[DEBUG]";
 #endif
 
-            picBoxMayuko.Visible = false;
+            picBoxMayuko.ImageLocation = @"myk.bmp";
+
+
+            this.ActiveControl = this.btnExit;
+
 
             // ハンドラ設定
             device.OnPacketArrival += OnPacketArrival;
@@ -103,7 +146,15 @@ namespace ipmsg_alert
             watchFlgDic[(int)watchEle.send] = false;
             watchFlgDic[(int)watchEle.receive] = true;
             watchFlgDic[(int)watchEle.open] = true;
+            watchFlgDic[(int)watchEle.leave] = false;
+            watchFlgDic[(int)watchEle._default] = true;
+            watchFlgDic[(int)watchEle.detail] = false;
             watchFlgDic[(int)watchEle.myk] = false;
+
+            txtDefault.Visible = defaultFlg;
+            txtDetail.Visible = detailFlg;
+            picBoxMayuko.Visible = mykFlg;
+
         }
 
         private void notifyIcon1_DoubleClick(object sender, EventArgs e)
@@ -178,7 +229,9 @@ namespace ipmsg_alert
             device.Close();
             label1.Text = "stop";
 
-            textBox1.Clear();
+            txtDefault.Clear();
+            txtDetail.Clear();
+            localIPDic.Clear();
         }
 
         async private void btnExit_Click(object sender, EventArgs e)
@@ -222,43 +275,48 @@ namespace ipmsg_alert
                 int command = int.Parse(splitted[4]);
 
                 string notice = "";
-                string responseMessage = "?????";
-                string commandMessage = " < " + splitted[4];
+                string responseMessage = "…";
+                string commandMessage = splitted[4];
+                string nameMessage = splittedName[0];
+                string sendName = "誰か";
                 bool flg = false;
                 bool flg2 = false;
-                bool flgLeave = true;
 
                 switch(command & 0xff)
                 {
                     case 0x20:
-                        if (e.Packet.Data[29] == myIP && sendFlg == true)
+                        if (e.Packet.Data[29] == myIP)
                         {
                             notice = string.Format("送信したよ\n[{0}]", dtNow.ToLongTimeString());
                             noticeNameIP = srcIP;
-                            responseMessage = "送るで";
-                            flg = true;
+                            if(localIPDic.ContainsKey(dstIP)) sendName = localIPDic[dstIP];
+                            responseMessage = sendName + " に送るで";
+                            nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
+                            if(sendFlg) flg = true;
                         }
 
                         break;
 
                     case 0x30:
-                        if (e.Packet.Data[29] != myIP && openFlg == true)
+                        if (e.Packet.Data[29] != myIP)
                         {
                             notice = string.Format("開封したよ [{0}]", dtNow.ToLongTimeString());
                             noticeNameIP = srcIP;
                             responseMessage = "開けたで";
-                            flg = true;
+                            nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
+                            if(openFlg) flg = true;
                         }
 
                         break;
 
                     case 0x21:
-                        if (e.Packet.Data[29] == myIP && receiveFlg == true)
+                        if (e.Packet.Data[29] == myIP)
                         {
                             notice = string.Format("受信したよ [{0}]", dtNow.ToLongTimeString());
                             noticeNameIP = dstIP;
-                            responseMessage = "受け取ったで";
-                            flg = true;
+                            responseMessage = "から受け取ったで";
+                            nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
+                            if(receiveFlg) flg = true;
                         }
 
                         break;
@@ -279,19 +337,20 @@ namespace ipmsg_alert
 
                         if (localIPDic.ContainsKey(srcIP))
                         {
+                            notice = string.Format("帰るよ [{0}]", dtNow.ToLongTimeString());
+                            noticeNameIP = srcIP;
+                            nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
                             localIPDic.Remove(srcIP);
+                            
+                            if(leaveFlg) flg = true;
+
+                            flg2 = true;
                         }
-                        else
-                        {
-                            flgLeave = false;
-                        }
-                        
                         responseMessage = "帰るで";
-                        flg2 = true;
                         break;
                     default:
-                        responseMessage = splitted[4];
-                        commandMessage = "";
+                        //responseMessage = splitted[4];
+                        //commandMessage = "";
                         break;
                 }
 
@@ -301,7 +360,7 @@ namespace ipmsg_alert
                     notifyIcon1.BalloonTipTitle = notice;
                     //バルーンヒントに表示するメッセージ
 
-                    notifyIcon1.BalloonTipText = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
+                    notifyIcon1.BalloonTipText = nameMessage;
                     
                     //バルーンヒントに表示するアイコン
                     notifyIcon1.BalloonTipIcon = ToolTipIcon.None;
@@ -309,16 +368,24 @@ namespace ipmsg_alert
                     //表示する時間をミリ秒で指定する
                     notifyIcon1.ShowBalloonTip(300000);
                 }
-                //if (flg2)
-                //{
-                //    Invoke(new Action<string>((msg) => textBox1.AppendText( msg + Environment.NewLine )),
-                //        splittedName[0] + "< " + responseMessage);
-                //}                
-                if (flgLeave)
+
+                if (flg || flg2)
                 {
-                    Invoke(new Action<string>((msg) => textBox1.AppendText( msg + Environment.NewLine )),
-                        splittedName[0] + " < " + responseMessage + commandMessage);
+                    Invoke(new Action<string>((msg) => txtDefault.AppendText( msg + Environment.NewLine )),
+                        string.Format("[{0}] {1} < {2}",
+                        dtNow.ToLongTimeString(),
+                        nameMessage,
+                        responseMessage));
                 }
+
+
+                Invoke(new Action<string>((msg) => txtDetail.AppendText( msg + Environment.NewLine )),
+                    string.Format("[{0}] {1} < {2} < {3}",
+                    dtNow.ToLongTimeString(),
+                    nameMessage,
+                    responseMessage,
+                    commandMessage));
+
                 //Invoke(new Action<bool>((b) => btnExit.Enabled = b),true);
             }
             
@@ -328,18 +395,33 @@ namespace ipmsg_alert
         {
             watchFlgDic = SettingForm.showSettingForm( watchFlgDic );
 
-            if (mykFlg)
-            {
-                picBoxMayuko.Visible = true;
-                //textBox1.Visible = false;
-            }
-            else
-            {
-                picBoxMayuko.Visible = false;
-                //textBox1.Visible = true;
-            }
+            //if (mykFlg)
+            //{
+            //    picBoxMayuko.Visible = true;
+            //    textBox1.Visible = false;
+            //    txtDetail.Visible = false;
+            //}
+            //else
+            //{
+            //    picBoxMayuko.Visible = false;
 
-            picBoxMayuko.ImageLocation = mykFlg ? @"myk.bmp" : null;
+            //    if (detailFlg)
+            //    {
+            //        textBox1.Visible = false;
+            //        txtDetail.Visible = true;
+            //    }
+            //    else
+            //    {
+            //        textBox1.Visible = true;
+            //        txtDetail.Visible = false;
+            //    }
+            //}
+
+            txtDefault.Visible = defaultFlg;
+            txtDetail.Visible = detailFlg;
+            picBoxMayuko.Visible = mykFlg;
+
+            //picBoxMayuko.ImageLocation = mykFlg ? @"myk.bmp" : null;
         }
 
         private void versionToolStripMenuItem_Click(object sender, EventArgs e)
@@ -391,6 +473,12 @@ namespace ipmsg_alert
             device.Close();
             
             Application.Exit();
+        }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            txtDefault.Clear();
+            txtDetail.Clear();
         }
     }
 }

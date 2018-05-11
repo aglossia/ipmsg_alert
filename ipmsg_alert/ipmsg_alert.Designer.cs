@@ -32,7 +32,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ipmsg_alert));
             this.btnWatchOn = new System.Windows.Forms.Button();
             this.btnWatchOff = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtDefault = new System.Windows.Forms.TextBox();
             this.btnExit = new System.Windows.Forms.Button();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.ttContext = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -45,6 +45,8 @@
             this.versionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.picBoxMayuko = new System.Windows.Forms.PictureBox();
+            this.txtDetail = new System.Windows.Forms.TextBox();
+            this.btnClear = new System.Windows.Forms.Button();
             this.ttContext.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBoxMayuko)).BeginInit();
@@ -62,7 +64,7 @@
             // 
             // btnWatchOff
             // 
-            this.btnWatchOff.Location = new System.Drawing.Point(140, 29);
+            this.btnWatchOff.Location = new System.Drawing.Point(93, 29);
             this.btnWatchOff.Name = "btnWatchOff";
             this.btnWatchOff.Size = new System.Drawing.Size(75, 23);
             this.btnWatchOff.TabIndex = 1;
@@ -70,15 +72,15 @@
             this.btnWatchOff.UseVisualStyleBackColor = true;
             this.btnWatchOff.Click += new System.EventHandler(this.btnWatchOff_Click);
             // 
-            // textBox1
+            // txtDefault
             // 
-            this.textBox1.Location = new System.Drawing.Point(13, 58);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox1.Size = new System.Drawing.Size(202, 191);
-            this.textBox1.TabIndex = 2;
+            this.txtDefault.Location = new System.Drawing.Point(13, 58);
+            this.txtDefault.Multiline = true;
+            this.txtDefault.Name = "txtDefault";
+            this.txtDefault.ReadOnly = true;
+            this.txtDefault.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtDefault.Size = new System.Drawing.Size(202, 191);
+            this.txtDefault.TabIndex = 2;
             // 
             // btnExit
             // 
@@ -180,18 +182,40 @@
             this.picBoxMayuko.TabIndex = 6;
             this.picBoxMayuko.TabStop = false;
             // 
+            // txtDetail
+            // 
+            this.txtDetail.Location = new System.Drawing.Point(13, 58);
+            this.txtDetail.Multiline = true;
+            this.txtDetail.Name = "txtDetail";
+            this.txtDetail.ReadOnly = true;
+            this.txtDetail.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtDetail.Size = new System.Drawing.Size(202, 191);
+            this.txtDetail.TabIndex = 7;
+            // 
+            // btnClear
+            // 
+            this.btnClear.Location = new System.Drawing.Point(174, 29);
+            this.btnClear.Name = "btnClear";
+            this.btnClear.Size = new System.Drawing.Size(41, 23);
+            this.btnClear.TabIndex = 8;
+            this.btnClear.Text = "Clear";
+            this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // 
             // ipmsg_alert
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(227, 296);
+            this.Controls.Add(this.btnClear);
             this.Controls.Add(this.picBoxMayuko);
+            this.Controls.Add(this.txtDefault);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnExit);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.btnWatchOff);
             this.Controls.Add(this.btnWatchOn);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.txtDetail);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ipmsg_alert";
             this.Text = "ipmsg alert";
@@ -212,7 +236,7 @@
 
         private System.Windows.Forms.Button btnWatchOn;
         private System.Windows.Forms.Button btnWatchOff;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtDefault;
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.Label label1;
@@ -225,6 +249,8 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem statusToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem1;
+        private System.Windows.Forms.TextBox txtDetail;
+        private System.Windows.Forms.Button btnClear;
     }
 }
 
