@@ -32,7 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>e_mail.ico</ApplicationIcon>
+    <ApplicationIcon>resource\e_mail.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PacketDotNet">
@@ -67,6 +67,7 @@
     <Compile Include="SettingForm.Designer.cs">
       <DependentUpon>SettingForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="setting\func.cs" />
     <Compile Include="StatusForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -114,7 +115,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="e_mail.ico" />
+    <Content Include="resource\e_mail.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

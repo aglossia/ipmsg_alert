@@ -30,17 +30,6 @@ namespace ipmsg_alert
         bool ssFlg = false;
         List<string> tipStack = new List<string>();
 
-        public class setting
-        {
-            bool _sendFlg;
-            bool _receiveFlg;
-            bool _openFlg;
-            bool _leaveFlg;
-            bool _defaultFlg;
-            bool _detailFlg;
-            bool _mykFlg;
-        }
-
         public bool sendFlg 
         {
             get

@@ -11,7 +11,6 @@ using SharpPcap;
 using PacketDotNet;
 using Microsoft.Win32;
 using System.Diagnostics;
-using ipmsg_alert.setting;
 
 namespace ipmsg_alert
 {
@@ -19,8 +18,6 @@ namespace ipmsg_alert
     {
         Dictionary<int, string> localIPDic = new Dictionary<int, string>();
 
-        static func fc = new func();
-        string screensaver = fc.GetScreenSaverName();
         int myIP = 54;
 
         LivePcapDevice device = LivePcapDeviceList.Instance[0];
@@ -29,17 +26,6 @@ namespace ipmsg_alert
         string sep_str = new String(separator);
         bool ssFlg = false;
         List<string> tipStack = new List<string>();
-
-        public class setting
-        {
-            bool _sendFlg;
-            bool _receiveFlg;
-            bool _openFlg;
-            bool _leaveFlg;
-            bool _defaultFlg;
-            bool _detailFlg;
-            bool _mykFlg;
-        }
 
         public bool sendFlg 
         {
@@ -143,7 +129,6 @@ namespace ipmsg_alert
 #if DEBUG
             this.Text = "[DEBUG]";
 #endif
-            SystemEvents.SessionSwitch += new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
 
             ssTimer.Enabled = true;
             ssTimer.Interval = 1000;
@@ -515,51 +500,45 @@ namespace ipmsg_alert
         private void ssTimer_Tick(object sender, EventArgs e)
         {
             Process[] processList = Process.GetProcesses();
-            ssFlg = false;
+            bool tmp = false;
 
             foreach (var a in processList)
             {
-                if (a.ProcessName == screensaver) ssFlg = true;
+                if ((a.ProcessName == "screensaver") || (a.ProcessName == "PhotoScreensaver.scr"))
+                {
+                    tmp = true;
+                }
             }
+
+            ssFlg = tmp;
 
             if (!ssFlg)
             {
-                if (tipStack.Count != 0) DisplayStackBalloon(tipStack);
-            }
-        }
+                if (tipStack.Count != 0)
+                {
+                    //ssTimer.Stop();
 
-        void SystemEvents_SessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
-        {
-            if (e.Reason == SessionSwitchReason.SessionLock)
-            { 
-                //I left my desk
-                ssTimer.Stop();
-                ssFlg = true;
-            }
-            else if (e.Reason == SessionSwitchReason.SessionUnlock)
-            { 
-                //I returned to my desk
-                ssTimer.Start();
-                ssFlg = false;
-                if(tipStack.Count != 0) DisplayStackBalloon(tipStack);
-            }
-        }
+                    string tipText = "";
 
-        void DisplayStackBalloon( List<string> tS )
-        {
-            string tipText = "";
+                    foreach(string x in tipStack)
+                    {
+                        tipText += x + "\n";
+                    }
+                    tipText += "⊂二二二( ^ω^)二⊃";
+                    //バルーンヒントのタイトル
+                    notifyIcon1.BalloonTipTitle = "離席中にきてたやつ";
+                    //バルーンヒントに表示するメッセージ    
+                    notifyIcon1.BalloonTipText = tipText;
+                    //バルーンヒントに表示するアイコン
+                    notifyIcon1.BalloonTipIcon = ToolTipIcon.None;
+                    //バルーンヒントを表示する
+                    //表示する時間をミリ秒で指定する
+                    notifyIcon1.ShowBalloonTip(300000);
 
-            foreach(string x in tS)
-            {
-                tipText += x + "\n";
+                    tipStack.Clear();
+                    //ssTimer.Start();
+                }
             }
-            tipText += "⊂二二二( ^ω^)二⊃";
-            notifyIcon1.BalloonTipTitle = "離席中にきてたやつ";
-            notifyIcon1.BalloonTipText = tipText;
-            notifyIcon1.BalloonTipIcon = ToolTipIcon.None;
-            notifyIcon1.ShowBalloonTip(300000);
-
-            tipStack.Clear();
         }
     }
 }
