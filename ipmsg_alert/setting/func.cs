@@ -32,5 +32,22 @@ namespace ipmsg_alert.setting
             }
             return ret;
         }
+
+        public int[] GetIPAddr(string IPAddrStr)
+        {
+            char[] separator = {'.'};
+            string sep_str = new String(separator);
+
+            string[] splitted = IPAddrStr.Split(separator);
+
+            int[] IPAddr = splitted.Select(int.Parse).ToArray();
+
+            return IPAddr;
+        }
+    }
+
+    class Constants
+    {
+        public static string configFileName = "ipma.config";
     }
 }

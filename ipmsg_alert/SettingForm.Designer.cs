@@ -37,12 +37,14 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.radioMayuko = new System.Windows.Forms.RadioButton();
             this.chboxLeave = new System.Windows.Forms.CheckBox();
+            this.txtIPaddr = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnCloseSF
             // 
-            this.btnCloseSF.Location = new System.Drawing.Point(63, 152);
+            this.btnCloseSF.Location = new System.Drawing.Point(67, 170);
             this.btnCloseSF.Name = "btnCloseSF";
             this.btnCloseSF.Size = new System.Drawing.Size(75, 23);
             this.btnCloseSF.TabIndex = 0;
@@ -137,11 +139,29 @@
             this.chboxLeave.Text = "Leave";
             this.chboxLeave.UseVisualStyleBackColor = true;
             // 
+            // txtIPaddr
+            // 
+            this.txtIPaddr.Location = new System.Drawing.Point(102, 138);
+            this.txtIPaddr.Name = "txtIPaddr";
+            this.txtIPaddr.Size = new System.Drawing.Size(83, 19);
+            this.txtIPaddr.TabIndex = 10;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(106, 119);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(15, 12);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "IP";
+            // 
             // SettingForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(194, 187);
+            this.ClientSize = new System.Drawing.Size(207, 202);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.txtIPaddr);
             this.Controls.Add(this.chboxLeave);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.chboxOpen);
@@ -170,5 +190,7 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton radioMayuko;
         private System.Windows.Forms.CheckBox chboxLeave;
+        private System.Windows.Forms.TextBox txtIPaddr;
+        private System.Windows.Forms.Label label1;
     }
 }

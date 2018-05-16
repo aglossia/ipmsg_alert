@@ -7,69 +7,76 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ipmsg_alert.setting;
 
 namespace ipmsg_alert
 {
     public partial class SettingForm : Form
     {
         static SettingForm fm;
-        public Dictionary<int, bool> returnDic = new Dictionary<int, bool>();
+        //public Dictionary<int, bool> returnDic = new Dictionary<int, bool>();
 
-        enum watchEle : int
-        {
-            send,
-            receive,
-            open,
-            leave,
-            _default,
-            detail,
-            myk
-        }
+        static ipmsg_alert.setting retAppSettings = new ipmsg_alert.setting();
 
-        public SettingForm( Dictionary<int, bool> watchFlgDic )
+        public SettingForm( ipmsg_alert.setting appSettings )
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
-            chboxSend.Checked = watchFlgDic[(int)watchEle.send];
+            chboxSend.Checked = appSettings.sendFlg;
 
-            chboxReceive.Checked = watchFlgDic[(int)watchEle.receive];
+            chboxReceive.Checked = appSettings.receiveFlg;
 
-            chboxOpen.Checked = watchFlgDic[(int)watchEle.open];
+            chboxOpen.Checked = appSettings.openFlg;
 
-            chboxLeave.Checked = watchFlgDic[(int)watchEle.leave];
+            chboxLeave.Checked = appSettings.leaveFlg;
 
-            radioDefault.Checked = watchFlgDic[(int)watchEle._default];
+            radioDefault.Checked = appSettings.defaultFlg;
 
-            radioDetail.Checked = watchFlgDic[(int)watchEle.detail];
+            radioDetail.Checked = appSettings.detailFlg;
 
-            radioMayuko.Checked = watchFlgDic[(int)watchEle.myk];
+            radioMayuko.Checked = appSettings.mykFlg;
 
-            returnDic = watchFlgDic;
+            txtIPaddr.Text = appSettings.ipAddr;
+
+            //returnDic = watchFlgDic;
         }
 
         private void btnClose_Click(object sender, EventArgs e)
         {
-            returnDic[(int)watchEle.send] = chboxSend.Checked;
-            returnDic[(int)watchEle.receive] = chboxReceive.Checked;
-            returnDic[(int)watchEle.open] = chboxOpen.Checked;
-            returnDic[(int)watchEle.leave] = chboxLeave.Checked;
-            returnDic[(int)watchEle._default] = radioDefault.Checked;
-            returnDic[(int)watchEle.detail] = radioDetail.Checked;
-            returnDic[(int)watchEle.myk] = radioMayuko.Checked;
+            retAppSettings.sendFlg = chboxSend.Checked;
+            retAppSettings.receiveFlg = chboxReceive.Checked;
+            retAppSettings.openFlg = chboxOpen.Checked;
+            retAppSettings.leaveFlg = chboxLeave.Checked;
+            retAppSettings.defaultFlg = radioDefault.Checked;
+            retAppSettings.detailFlg = radioDetail.Checked;
+            retAppSettings.mykFlg = radioMayuko.Checked;
+            retAppSettings.ipAddr = txtIPaddr.Text;
+
+            System.Xml.Serialization.XmlSerializer serializer1 =
+                new System.Xml.Serialization.XmlSerializer(typeof(ipmsg_alert.setting));
+            //ファイルを開く（UTF-8 BOM無し）
+            System.IO.StreamWriter sw = new System.IO.StreamWriter(
+                Constants.configFileName, false, new System.Text.UTF8Encoding(false));
+
+            //シリアル化し、XMLファイルに保存する
+            serializer1.Serialize(sw, retAppSettings);
+            
+            sw.Close();
 
             this.Close();
         }
 
-        static public Dictionary<int, bool> showSettingForm( Dictionary<int, bool> inDic)
+        static public void showSettingForm( ref ipmsg_alert.setting appSettings )
         {
-            fm = new SettingForm( inDic );
+            retAppSettings = appSettings;
+            fm = new SettingForm( retAppSettings );
             fm.StartPosition = FormStartPosition.CenterParent;
             fm.ShowDialog();
-            var insDic = fm.returnDic;
+            //var insDic = fm.returnDic;
             fm.Dispose();
 
-            return insDic;
+            //return insDic;
         }
 
         private void SettingForm_FormClosed(object sender, FormClosedEventArgs e)

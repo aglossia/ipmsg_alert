@@ -12,6 +12,7 @@ using PacketDotNet;
 using Microsoft.Win32;
 using System.Diagnostics;
 using ipmsg_alert.setting;
+using System.IO;
 
 namespace ipmsg_alert
 {
@@ -21,7 +22,7 @@ namespace ipmsg_alert
 
         static func fc = new func();
         string screensaver = fc.GetScreenSaverName();
-        int myIP = 54;
+        int myIP;
 
         LivePcapDevice device = LivePcapDeviceList.Instance[0];
         static char[] separator = {':'};
@@ -32,109 +33,119 @@ namespace ipmsg_alert
 
         public class setting
         {
-            bool _sendFlg;
-            bool _receiveFlg;
-            bool _openFlg;
-            bool _leaveFlg;
-            bool _defaultFlg;
-            bool _detailFlg;
-            bool _mykFlg;
-        }
+            //bool _sendFlg;
+            //bool _receiveFlg;
+            //bool _openFlg;
+            //bool _leaveFlg;
+            //bool _defaultFlg;
+            //bool _detailFlg;
+            //bool _mykFlg;
 
-        public bool sendFlg 
-        {
-            get
+            public bool sendFlg { get; set; }
+            public bool receiveFlg { get; set; }
+            public bool openFlg { get; set; }
+            public bool leaveFlg { get; set; }
+            public bool defaultFlg { get; set; }
+            public bool detailFlg { get; set; }
+            public bool mykFlg { get; set; }
+            public string ipAddr { get; set; }
+
+            public setting()
             {
-                return watchFlgDic[(int)watchEle.send];
-            }
-            set
-            {
-                watchFlgDic[(int)watchEle.send] = value;
-            }
-        }
-        public bool receiveFlg
-        {
-            get
-            {
-                return watchFlgDic[(int)watchEle.receive];
-            }
-            set
-            {
-                watchFlgDic[(int)watchEle.receive] = value;
-            }
-        }
-        public bool openFlg
-        {
-            get
-            {
-                return watchFlgDic[(int)watchEle.open];
-            }
-            set
-            {
-                watchFlgDic[(int)watchEle.open] = value;
+                sendFlg = false;
+                receiveFlg = true;
+                openFlg = true;
+                leaveFlg = false;
+                defaultFlg = true;
+                detailFlg = false;
+                mykFlg = false;
+                ipAddr = "255.255.255.255";
             }
         }
 
-        public bool leaveFlg
-        {
-            get
-            {
-                return watchFlgDic[(int)watchEle.leave];
-            }
-            set
-            {
-                watchFlgDic[(int)watchEle.leave] = value;
-            }
-        }
+        //public bool sendFlg 
+        //{
+        //    get
+        //    {
+        //        return watchFlgDic[(int)watchEle.send];
+        //    }
+        //    set
+        //    {
+        //        watchFlgDic[(int)watchEle.send] = value;
+        //    }
+        //}
+        //public bool receiveFlg
+        //{
+        //    get
+        //    {
+        //        return watchFlgDic[(int)watchEle.receive];
+        //    }
+        //    set
+        //    {
+        //        watchFlgDic[(int)watchEle.receive] = value;
+        //    }
+        //}
+        //public bool openFlg
+        //{
+        //    get
+        //    {
+        //        return watchFlgDic[(int)watchEle.open];
+        //    }
+        //    set
+        //    {
+        //        watchFlgDic[(int)watchEle.open] = value;
+        //    }
+        //}
 
-        public bool defaultFlg
-        {
-            get
-            {
-                return watchFlgDic[(int)watchEle._default];
-            }
-            set
-            {
-                watchFlgDic[(int)watchEle._default] = value;
-            }
-        }
+        //public bool leaveFlg
+        //{
+        //    get
+        //    {
+        //        return watchFlgDic[(int)watchEle.leave];
+        //    }
+        //    set
+        //    {
+        //        watchFlgDic[(int)watchEle.leave] = value;
+        //    }
+        //}
 
-        public bool detailFlg
-        {
-            get
-            {
-                return watchFlgDic[(int)watchEle.detail];
-            }
-            set
-            {
-                watchFlgDic[(int)watchEle.detail] = value;
-            }
-        }
+        //public bool defaultFlg
+        //{
+        //    get
+        //    {
+        //        return watchFlgDic[(int)watchEle._default];
+        //    }
+        //    set
+        //    {
+        //        watchFlgDic[(int)watchEle._default] = value;
+        //    }
+        //}
 
-        public bool mykFlg
-        {
-            get
-            {
-                return watchFlgDic[(int)watchEle.myk];
-            }
-            set
-            {
-                watchFlgDic[(int)watchEle.myk] = value;
-            }
-        }
+        //public bool detailFlg
+        //{
+        //    get
+        //    {
+        //        return watchFlgDic[(int)watchEle.detail];
+        //    }
+        //    set
+        //    {
+        //        watchFlgDic[(int)watchEle.detail] = value;
+        //    }
+        //}
 
-        enum watchEle : int
-        {
-            send,
-            receive,
-            open,
-            leave,
-            _default,
-            detail,
-            myk
-        }
+        //public bool mykFlg
+        //{
+        //    get
+        //    {
+        //        return watchFlgDic[(int)watchEle.myk];
+        //    }
+        //    set
+        //    {
+        //        watchFlgDic[(int)watchEle.myk] = value;
+        //    }
+        //}
 
-        Dictionary<int, bool> watchFlgDic = new Dictionary<int, bool>();
+        setting appSettings = new setting();
 
         public ipmsg_alert()
         {
@@ -145,11 +156,27 @@ namespace ipmsg_alert
 #endif
             SystemEvents.SessionSwitch += new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
 
+            // configファイルがある場合 setting を読み込む
+            if (File.Exists(Constants.configFileName))
+            {
+                System.Xml.Serialization.XmlSerializer serializer = 
+                    new System.Xml.Serialization.XmlSerializer(typeof(setting));
+                
+                System.IO.StreamReader sr = new System.IO.StreamReader(
+                    Constants.configFileName, new System.Text.UTF8Encoding(false));
+
+                //XMLファイルから読み込み、逆シリアル化する
+                appSettings = (setting)serializer.Deserialize(sr);
+                
+                sr.Close();
+            }
+
             ssTimer.Enabled = true;
             ssTimer.Interval = 1000;
 
             picBoxMayuko.ImageLocation = @"myk.bmp";
 
+            myIP = fc.GetIPAddr(appSettings.ipAddr)[3];
 
             this.ActiveControl = this.btnExit;
 
@@ -165,17 +192,17 @@ namespace ipmsg_alert
 
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
-            watchFlgDic[(int)watchEle.send] = false;
-            watchFlgDic[(int)watchEle.receive] = true;
-            watchFlgDic[(int)watchEle.open] = true;
-            watchFlgDic[(int)watchEle.leave] = false;
-            watchFlgDic[(int)watchEle._default] = true;
-            watchFlgDic[(int)watchEle.detail] = false;
-            watchFlgDic[(int)watchEle.myk] = false;
+            //watchFlgDic[(int)watchEle.send] = false;
+            //watchFlgDic[(int)watchEle.receive] = true;
+            //watchFlgDic[(int)watchEle.open] = true;
+            //watchFlgDic[(int)watchEle.leave] = false;
+            //watchFlgDic[(int)watchEle._default] = true;
+            //watchFlgDic[(int)watchEle.detail] = false;
+            //watchFlgDic[(int)watchEle.myk] = false;
 
-            txtDefault.Visible = defaultFlg;
-            txtDetail.Visible = detailFlg;
-            picBoxMayuko.Visible = mykFlg;
+            txtDefault.Visible = appSettings.defaultFlg;
+            txtDetail.Visible = appSettings.detailFlg;
+            picBoxMayuko.Visible = appSettings.mykFlg;
 
         }
 
@@ -314,7 +341,7 @@ namespace ipmsg_alert
                             if(localIPDic.ContainsKey(dstIP)) sendName = localIPDic[dstIP];
                             responseMessage = sendName + " に送るで";
                             nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
-                            if(sendFlg) flg = true;
+                            if(appSettings.sendFlg) flg = true;
                         }
 
                         break;
@@ -326,7 +353,7 @@ namespace ipmsg_alert
                             noticeNameIP = srcIP;
                             responseMessage = "開けたで";
                             nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
-                            if(openFlg) flg = true;
+                            if(appSettings.openFlg) flg = true;
                         }
 
                         break;
@@ -338,7 +365,7 @@ namespace ipmsg_alert
                             noticeNameIP = dstIP;
                             responseMessage = "から受け取ったで";
                             nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
-                            if(receiveFlg) flg = true;
+                            if(appSettings.receiveFlg) flg = true;
                         }
 
                         break;
@@ -364,7 +391,7 @@ namespace ipmsg_alert
                             nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
                             localIPDic.Remove(srcIP);
                             
-                            if(leaveFlg) flg = true;
+                            if(appSettings.leaveFlg) flg = true;
 
                             flg2 = true;
                         }
@@ -424,33 +451,11 @@ namespace ipmsg_alert
 
         private void settingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            watchFlgDic = SettingForm.showSettingForm( watchFlgDic );
+            SettingForm.showSettingForm( ref appSettings );
 
-            //if (mykFlg)
-            //{
-            //    picBoxMayuko.Visible = true;
-            //    textBox1.Visible = false;
-            //    txtDetail.Visible = false;
-            //}
-            //else
-            //{
-            //    picBoxMayuko.Visible = false;
-
-            //    if (detailFlg)
-            //    {
-            //        textBox1.Visible = false;
-            //        txtDetail.Visible = true;
-            //    }
-            //    else
-            //    {
-            //        textBox1.Visible = true;
-            //        txtDetail.Visible = false;
-            //    }
-            //}
-
-            txtDefault.Visible = defaultFlg;
-            txtDetail.Visible = detailFlg;
-            picBoxMayuko.Visible = mykFlg;
+            txtDefault.Visible = appSettings.defaultFlg;
+            txtDetail.Visible = appSettings.detailFlg;
+            picBoxMayuko.Visible = appSettings.mykFlg;
 
             //picBoxMayuko.ImageLocation = mykFlg ? @"myk.bmp" : null;
         }
