@@ -18,11 +18,11 @@ namespace ipmsg_alert
 {
     public partial class ipmsg_alert : Form
     {
-        Dictionary<int, string> localIPDic = new Dictionary<int, string>();
+        Dictionary<string, string> localIPDic = new Dictionary<string, string>();
 
         static func fc = new func();
         string screensaver = fc.GetScreenSaverName();
-        int myIP;
+        string myIP;
 
         LivePcapDevice device = LivePcapDeviceList.Instance[0];
         static char[] separator = {':'};
@@ -176,7 +176,7 @@ namespace ipmsg_alert
 
             picBoxMayuko.ImageLocation = @"myk.bmp";
 
-            myIP = fc.GetIPAddr(appSettings.ipAddr)[3];
+            myIP = appSettings.ipAddr;
 
             this.ActiveControl = this.btnExit;
 
@@ -191,14 +191,6 @@ namespace ipmsg_alert
             device.StartCapture();
 
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-
-            //watchFlgDic[(int)watchEle.send] = false;
-            //watchFlgDic[(int)watchEle.receive] = true;
-            //watchFlgDic[(int)watchEle.open] = true;
-            //watchFlgDic[(int)watchEle.leave] = false;
-            //watchFlgDic[(int)watchEle._default] = true;
-            //watchFlgDic[(int)watchEle.detail] = false;
-            //watchFlgDic[(int)watchEle.myk] = false;
 
             txtDefault.Visible = appSettings.defaultFlg;
             txtDetail.Visible = appSettings.detailFlg;
@@ -302,16 +294,25 @@ namespace ipmsg_alert
             string[] splitted;
             string[] splittedName;
             
-            if(e.Packet.Data[34] == 9 && e.Packet.Data[35] == 121 && e.Packet.Data[36] == 9 && e.Packet.Data[37] == 121)
+            int srcPort = (e.Packet.Data[34] << 8) + e.Packet.Data[35];
+            int dstPort = (e.Packet.Data[36] << 8) + e.Packet.Data[37];
+
+            if((srcPort == 2425) && (dstPort == 2425))
             {
                 //Invoke(new Action<bool>((b) => btnExit.Enabled = b),false);
                 // 必要な変数を宣言する
                 DateTime dtNow = DateTime.Now;
 
-                int srcIP = e.Packet.Data[29];
-                int dstIP = e.Packet.Data[33];
+                string srcIP = string.Format("{0}.{1}.{2}.{3}",
+                    e.Packet.Data[26], e.Packet.Data[27], e.Packet.Data[28], e.Packet.Data[29]);
 
-                int noticeNameIP = 54;
+                string dstIP = string.Format("{0}.{1}.{2}.{3}",
+                    e.Packet.Data[30], e.Packet.Data[31], e.Packet.Data[32], e.Packet.Data[33]);
+
+                int srcIP_host = e.Packet.Data[29];
+                int dstIP_host = e.Packet.Data[33];
+
+                string noticeNameIP = myIP;
 
                 var segment = new ArraySegment<byte>(e.Packet.Data,42,e.Packet.Data.Length - 42);
 
@@ -334,7 +335,7 @@ namespace ipmsg_alert
                 switch(command & 0xff)
                 {
                     case 0x20:
-                        if (e.Packet.Data[29] == myIP)
+                        if (srcIP == myIP)
                         {
                             notice = string.Format("[{0}] 送信したよ", dtNow.ToLongTimeString());
                             noticeNameIP = srcIP;
@@ -347,7 +348,7 @@ namespace ipmsg_alert
                         break;
 
                     case 0x30:
-                        if (e.Packet.Data[29] != myIP)
+                        if (srcIP != myIP)
                         {
                             notice = string.Format("[{0}] 開封したよ", dtNow.ToLongTimeString());
                             noticeNameIP = srcIP;
@@ -359,7 +360,7 @@ namespace ipmsg_alert
                         break;
 
                     case 0x21:
-                        if (e.Packet.Data[29] == myIP)
+                        if (srcIP == myIP)
                         {
                             notice = string.Format("[{0}] 受信したよ", dtNow.ToLongTimeString());
                             noticeNameIP = dstIP;

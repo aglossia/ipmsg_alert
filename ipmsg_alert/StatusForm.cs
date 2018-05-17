@@ -7,12 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ipmsg_alert.setting;
 
 namespace ipmsg_alert
 {
     public partial class StatusForm : Form
     {
-        public StatusForm(Dictionary<int, string> IPDic)
+        func fc = new func();
+
+        public StatusForm(Dictionary<string, string> IPDic)
         {
             InitializeComponent();
 
@@ -20,11 +23,12 @@ namespace ipmsg_alert
 
             foreach (var i in IPDic)
             {
-                txtIPView.AppendText(i.Value + ":" + i.Key + Environment.NewLine);
+                // ホスト部が1オクテットのためそこだけ表示
+                txtIPView.AppendText(i.Value + ":" + fc.GetIPAddr(i.Key)[3] + Environment.NewLine);
             }
         }
 
-        static public void showStatusForm(Dictionary<int, string> IPDic)
+        static public void showStatusForm(Dictionary<string, string> IPDic)
         {
             StatusForm fm = new StatusForm(IPDic);
             fm.StartPosition = FormStartPosition.CenterParent;

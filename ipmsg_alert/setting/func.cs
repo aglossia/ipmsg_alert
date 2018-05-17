@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace ipmsg_alert.setting
 {
@@ -20,8 +21,6 @@ namespace ipmsg_alert.setting
             if (regkey == null) return "error";
 
             string ssFilePath = (string)regkey.GetValue("SCRNSAVE.EXE");
-
-            string tmp = Path.GetExtension(ssFilePath);
 
             if(Path.GetExtension(ssFilePath) == ".exe")
             {
@@ -43,6 +42,38 @@ namespace ipmsg_alert.setting
             int[] IPAddr = splitted.Select(int.Parse).ToArray();
 
             return IPAddr;
+        }
+
+        public bool CheckIpString(string str) {
+
+            if (string.IsNullOrEmpty(str)) {
+                throw new ArgumentException("str is null or empty.");
+            }
+
+            if (str.Length < 7 || str.Length > 15) {
+                throw new FormatException("str is illegal fortmat (" + str + ")"); 
+            }
+
+            Match m = Regex.Match(str, @"^(\d+)\.(\d+)\.(\d+)\.(\d+)$");
+            if (m.Success) {
+                for(int i = 1; i < 5; i++) {
+                    if (!isInByteRange(m.Groups[i].Value)) {
+                        throw new FormatException("str is illegal fortmat (" + str + ")"); 
+                    }
+                }
+            }
+            else
+            {
+                throw new FormatException("str is illegal fortmat (" + str + ")"); 
+
+            }
+            return true;
+        }
+
+        // 0 ～ 255 の範囲内かどうかチェックする
+        private static bool isInByteRange(string block) {
+            byte result;
+            return byte.TryParse(block, out result);
         }
     }
 

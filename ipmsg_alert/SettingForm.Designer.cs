@@ -39,6 +39,7 @@
             this.chboxLeave = new System.Windows.Forms.CheckBox();
             this.txtIPaddr = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.labelIPCaution = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -48,7 +49,7 @@
             this.btnCloseSF.Name = "btnCloseSF";
             this.btnCloseSF.Size = new System.Drawing.Size(75, 23);
             this.btnCloseSF.TabIndex = 0;
-            this.btnCloseSF.Text = "Close";
+            this.btnCloseSF.Text = "Apply";
             this.btnCloseSF.UseVisualStyleBackColor = true;
             this.btnCloseSF.Click += new System.EventHandler(this.btnClose_Click);
             // 
@@ -145,21 +146,34 @@
             this.txtIPaddr.Name = "txtIPaddr";
             this.txtIPaddr.Size = new System.Drawing.Size(83, 19);
             this.txtIPaddr.TabIndex = 10;
+            this.txtIPaddr.Leave += new System.EventHandler(this.txtIPaddr_Leave);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(106, 119);
+            this.label1.Location = new System.Drawing.Point(81, 141);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(15, 12);
             this.label1.TabIndex = 11;
             this.label1.Text = "IP";
+            // 
+            // labelIPCaution
+            // 
+            this.labelIPCaution.AutoSize = true;
+            this.labelIPCaution.ForeColor = System.Drawing.Color.Red;
+            this.labelIPCaution.Location = new System.Drawing.Point(86, 121);
+            this.labelIPCaution.Name = "labelIPCaution";
+            this.labelIPCaution.Size = new System.Drawing.Size(99, 12);
+            this.labelIPCaution.TabIndex = 12;
+            this.labelIPCaution.Text = "IP format is illegal";
+            this.labelIPCaution.Visible = false;
             // 
             // SettingForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(207, 202);
+            this.Controls.Add(this.labelIPCaution);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtIPaddr);
             this.Controls.Add(this.chboxLeave);
@@ -192,5 +206,6 @@
         private System.Windows.Forms.CheckBox chboxLeave;
         private System.Windows.Forms.TextBox txtIPaddr;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelIPCaution;
     }
 }
