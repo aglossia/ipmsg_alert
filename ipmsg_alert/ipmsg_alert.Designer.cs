@@ -36,9 +36,9 @@
             this.btnExit = new System.Windows.Forms.Button();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.ttContext = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exitContextMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.menuToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,7 +49,7 @@
             this.btnClear = new System.Windows.Forms.Button();
             this.ssTimer = new System.Windows.Forms.Timer(this.components);
             this.ttContext.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
+            this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBoxMayuko)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,16 +105,16 @@
             // ttContext
             // 
             this.ttContext.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.exitToolStripMenuItem});
+            this.exitContextMenuItem});
             this.ttContext.Name = "ttContext";
             this.ttContext.Size = new System.Drawing.Size(99, 26);
             // 
-            // exitToolStripMenuItem
+            // exitContextMenuItem
             // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(98, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            this.exitContextMenuItem.Name = "exitContextMenuItem";
+            this.exitContextMenuItem.Size = new System.Drawing.Size(98, 22);
+            this.exitContextMenuItem.Text = "Exit";
+            this.exitContextMenuItem.Click += new System.EventHandler(this.exitContextMenuItem_Click);
             // 
             // label1
             // 
@@ -126,15 +126,15 @@
             this.label1.TabIndex = 4;
             this.label1.Text = "label1";
             // 
-            // menuStrip1
+            // menuStrip
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(227, 26);
-            this.menuStrip1.TabIndex = 5;
-            this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip.Name = "menuStrip";
+            this.menuStrip.Size = new System.Drawing.Size(227, 26);
+            this.menuStrip.TabIndex = 5;
+            this.menuStrip.Text = "menuStrip1";
             // 
             // menuToolStripMenuItem
             // 
@@ -170,10 +170,10 @@
             // 
             // exitToolStripMenuItem1
             // 
-            this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
+            this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
             this.exitToolStripMenuItem1.Text = "Exit";
-            this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem1_Click);
+            this.exitToolStripMenuItem1.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // picBoxMayuko
             // 
@@ -219,7 +219,7 @@
             this.Controls.Add(this.btnExit);
             this.Controls.Add(this.btnWatchOff);
             this.Controls.Add(this.btnWatchOn);
-            this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.menuStrip);
             this.Controls.Add(this.txtDetail);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ipmsg_alert";
@@ -229,8 +229,8 @@
             this.Load += new System.EventHandler(this.ipmsg_alert_Load);
             this.ClientSizeChanged += new System.EventHandler(this.ipmsg_alert_ClientSizeChanged);
             this.ttContext.ResumeLayout(false);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            this.menuStrip.ResumeLayout(false);
+            this.menuStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBoxMayuko)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -245,13 +245,13 @@
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem menuToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingToolStripMenuItem;
         private System.Windows.Forms.PictureBox picBoxMayuko;
         private System.Windows.Forms.ToolStripMenuItem versionToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip ttContext;
-        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exitContextMenuItem;
         private System.Windows.Forms.ToolStripMenuItem statusToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem1;
         private System.Windows.Forms.TextBox txtDetail;

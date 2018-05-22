@@ -22,9 +22,9 @@ namespace ipmsg_alert
 
         static func fc = new func();
         string screensaver = fc.GetScreenSaverName();
-        string myIP;
+        int networkIndex;
 
-        LivePcapDevice device = LivePcapDeviceList.Instance[0];
+        LivePcapDevice device;
         static char[] separator = {':'};
         static char[] separatorName = {'\0'};
         string sep_str = new String(separator);
@@ -33,14 +33,7 @@ namespace ipmsg_alert
 
         public class setting
         {
-            //bool _sendFlg;
-            //bool _receiveFlg;
-            //bool _openFlg;
-            //bool _leaveFlg;
-            //bool _defaultFlg;
-            //bool _detailFlg;
-            //bool _mykFlg;
-
+            public string hostName { get; set; }
             public bool sendFlg { get; set; }
             public bool receiveFlg { get; set; }
             public bool openFlg { get; set; }
@@ -49,9 +42,11 @@ namespace ipmsg_alert
             public bool detailFlg { get; set; }
             public bool mykFlg { get; set; }
             public string ipAddr { get; set; }
+            public int netWork { get; set; }
 
             public setting()
             {
+                hostName = System.Net.Dns.GetHostName();
                 sendFlg = false;
                 receiveFlg = true;
                 openFlg = true;
@@ -60,90 +55,9 @@ namespace ipmsg_alert
                 detailFlg = false;
                 mykFlg = false;
                 ipAddr = "255.255.255.255";
+                netWork = 0;
             }
         }
-
-        //public bool sendFlg 
-        //{
-        //    get
-        //    {
-        //        return watchFlgDic[(int)watchEle.send];
-        //    }
-        //    set
-        //    {
-        //        watchFlgDic[(int)watchEle.send] = value;
-        //    }
-        //}
-        //public bool receiveFlg
-        //{
-        //    get
-        //    {
-        //        return watchFlgDic[(int)watchEle.receive];
-        //    }
-        //    set
-        //    {
-        //        watchFlgDic[(int)watchEle.receive] = value;
-        //    }
-        //}
-        //public bool openFlg
-        //{
-        //    get
-        //    {
-        //        return watchFlgDic[(int)watchEle.open];
-        //    }
-        //    set
-        //    {
-        //        watchFlgDic[(int)watchEle.open] = value;
-        //    }
-        //}
-
-        //public bool leaveFlg
-        //{
-        //    get
-        //    {
-        //        return watchFlgDic[(int)watchEle.leave];
-        //    }
-        //    set
-        //    {
-        //        watchFlgDic[(int)watchEle.leave] = value;
-        //    }
-        //}
-
-        //public bool defaultFlg
-        //{
-        //    get
-        //    {
-        //        return watchFlgDic[(int)watchEle._default];
-        //    }
-        //    set
-        //    {
-        //        watchFlgDic[(int)watchEle._default] = value;
-        //    }
-        //}
-
-        //public bool detailFlg
-        //{
-        //    get
-        //    {
-        //        return watchFlgDic[(int)watchEle.detail];
-        //    }
-        //    set
-        //    {
-        //        watchFlgDic[(int)watchEle.detail] = value;
-        //    }
-        //}
-
-        //public bool mykFlg
-        //{
-        //    get
-        //    {
-        //        return watchFlgDic[(int)watchEle.myk];
-        //    }
-        //    set
-        //    {
-        //        watchFlgDic[(int)watchEle.myk] = value;
-        //    }
-        //}
 
         setting appSettings = new setting();
 
@@ -153,7 +67,15 @@ namespace ipmsg_alert
 
 #if DEBUG
             this.Text = "[DEBUG]";
+            notifyIcon1.Text = "[DEBUG]";
 #endif
+            
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.ActiveControl = this.btnExit;
+            picBoxMayuko.ImageLocation = @"myk.bmp";
+            ssTimer.Enabled = true;
+            ssTimer.Interval = 1000;
+
             SystemEvents.SessionSwitch += new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
 
             // configファイルがある場合 setting を読み込む
@@ -169,33 +91,22 @@ namespace ipmsg_alert
                 appSettings = (setting)serializer.Deserialize(sr);
                 
                 sr.Close();
+
+                if (appSettings.hostName != System.Net.Dns.GetHostName())
+                {
+                    MessageBox.Show("ネットワーク接続が別マシンの設定となっています。\nIP、ネットワーク設定を確認してください。",
+                        "ipmsg_alert",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
             }
-
-            ssTimer.Enabled = true;
-            ssTimer.Interval = 1000;
-
-            picBoxMayuko.ImageLocation = @"myk.bmp";
-
-            myIP = appSettings.ipAddr;
-
-            this.ActiveControl = this.btnExit;
-
-
-            // ハンドラ設定
-            device.OnPacketArrival += OnPacketArrival;
-
-            // デバイスオープン
-            int readTimeoutMilliseconds = 1000;
-            device.Open(DeviceMode.Promiscuous, readTimeoutMilliseconds);
-            // キャプチャ開始
-            device.StartCapture();
-
-            this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
             txtDefault.Visible = appSettings.defaultFlg;
             txtDetail.Visible = appSettings.detailFlg;
             picBoxMayuko.Visible = appSettings.mykFlg;
 
+            // パケットキャプチャ開始
+            PcapOpen();
         }
 
         private void notifyIcon1_DoubleClick(object sender, EventArgs e)
@@ -237,57 +148,67 @@ namespace ipmsg_alert
             }
         }
 
-
+        /// <summary>
+        /// ipma load
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ipmsg_alert_Load(object sender, EventArgs e)
         {
             label1.Text = "watching...";
         }
         
+        /// <summary>
+        /// WatchON
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnWatchOn_Click(object sender, EventArgs e)
         {
             if (!device.Opened)
             {
-                // ハンドラ設定
-                device.OnPacketArrival += OnPacketArrival;
-
-                // デバイスオープン
-                int readTimeoutMilliseconds = 1000;
-                device.Open(DeviceMode.Promiscuous, readTimeoutMilliseconds);
-                // キャプチャ開始
-                device.StartCapture();
+                PcapOpen();
 
                 label1.Text = "watching...";
             }
         }
 
-        async private void btnWatchOff_Click(object sender, EventArgs e)
+        /// <summary>
+        /// WatchOFF
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnWatchOff_Click(object sender, EventArgs e)
         {
-            // キャプチャ停止中にキャプチャが走るのを防ぐため
-            device.OnPacketArrival -= OnPacketArrival;
-            await Task.Delay(500);
-            // キャプチャ停止
-            device.StopCapture();
-            device.Close();
-            label1.Text = "stop";
+            if (device.Opened)
+            {
+                PcapClose();
 
-            txtDefault.Clear();
-            txtDetail.Clear();
-            localIPDic.Clear();
+                label1.Text = "stop";
+
+                txtDefault.Clear();
+                txtDetail.Clear();
+                localIPDic.Clear();
+            }
         }
 
-        async private void btnExit_Click(object sender, EventArgs e)
+        /// <summary>
+        /// BottunExit
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnExit_Click(object sender, EventArgs e)
         {
-            // キャプチャ停止中にキャプチャが走るのを防ぐため
-            device.OnPacketArrival -= OnPacketArrival;
-            await Task.Delay(500);
-            // キャプチャ停止
-            device.StopCapture();
-            device.Close();
+            PcapClose();
             
             Application.Exit();
         }
 
-        // イベントハンドラ
+        /// <summary>
+        /// PacketCapture
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnPacketArrival(object sender, CaptureEventArgs e)
         {
             // 0:ver(1fix), 1:Packet number, 2:username, 3, hostname, 4:command, 5:addition
@@ -312,7 +233,7 @@ namespace ipmsg_alert
                 int srcIP_host = e.Packet.Data[29];
                 int dstIP_host = e.Packet.Data[33];
 
-                string noticeNameIP = myIP;
+                string noticeNameIP = appSettings.ipAddr;
 
                 var segment = new ArraySegment<byte>(e.Packet.Data,42,e.Packet.Data.Length - 42);
 
@@ -335,7 +256,7 @@ namespace ipmsg_alert
                 switch(command & 0xff)
                 {
                     case 0x20:
-                        if (srcIP == myIP)
+                        if (srcIP == appSettings.ipAddr)
                         {
                             notice = string.Format("[{0}] 送信したよ", dtNow.ToLongTimeString());
                             noticeNameIP = srcIP;
@@ -348,7 +269,7 @@ namespace ipmsg_alert
                         break;
 
                     case 0x30:
-                        if (srcIP != myIP)
+                        if (srcIP != appSettings.ipAddr)
                         {
                             notice = string.Format("[{0}] 開封したよ", dtNow.ToLongTimeString());
                             noticeNameIP = srcIP;
@@ -360,7 +281,7 @@ namespace ipmsg_alert
                         break;
 
                     case 0x21:
-                        if (srcIP == myIP)
+                        if (srcIP == appSettings.ipAddr)
                         {
                             notice = string.Format("[{0}] 受信したよ", dtNow.ToLongTimeString());
                             noticeNameIP = dstIP;
@@ -437,7 +358,6 @@ namespace ipmsg_alert
                         responseMessage));
                 }
 
-
                 Invoke(new Action<string>((msg) => txtDetail.AppendText( msg + Environment.NewLine )),
                     string.Format("[{0}] {1} < {2} < {3}",
                     dtNow.ToLongTimeString(),
@@ -450,74 +370,98 @@ namespace ipmsg_alert
             
         }
 
+        /// <summary>
+        /// SettingForm
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void settingToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SettingForm.showSettingForm( ref appSettings );
 
+            if (networkIndex != appSettings.netWork)
+            {
+                PcapClose();
+                PcapOpen();
+            }
+
             txtDefault.Visible = appSettings.defaultFlg;
             txtDetail.Visible = appSettings.detailFlg;
             picBoxMayuko.Visible = appSettings.mykFlg;
-
-            //picBoxMayuko.ImageLocation = mykFlg ? @"myk.bmp" : null;
         }
 
+        /// <summary>
+        /// VersionForm
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void versionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             VersionForm.showVersionForm();
-
-            foreach (var i in localIPDic)
-            {
-                Console.WriteLine(i.Value);
-            }
-            Console.WriteLine(localIPDic.Count);
         }
 
-        async private void ipmsg_alert_FormClosed(object sender, FormClosedEventArgs e)
+        /// <summary>
+        /// ipma close
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ipmsg_alert_FormClosed(object sender, FormClosedEventArgs e)
         {
-            // キャプチャ停止中にキャプチャが走るのを防ぐため
-            device.OnPacketArrival -= OnPacketArrival;
-            await Task.Delay(500);
-            // キャプチャ停止
-            device.StopCapture();
-            device.Close();
+            PcapClose();
             
             Application.Exit();
         }
 
-        async private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        /// <summary>
+        /// TasktrayContext Exit Proc
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void exitContextMenuItem_Click(object sender, EventArgs e)
         {
-            // キャプチャ停止中にキャプチャが走るのを防ぐため
-            device.OnPacketArrival -= OnPacketArrival;
-            await Task.Delay(500);
-            device.StopCapture();
-            device.Close();
+            PcapClose();
             
             Application.Exit();
         }
 
+        /// <summary>
+        /// menu status proc
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void statusToolStripMenuItem_Click(object sender, EventArgs e)
         {
             StatusForm.showStatusForm(localIPDic);
         }
 
-        async private void exitToolStripMenuItem1_Click(object sender, EventArgs e)
+        /// <summary>
+        /// menu exit proc
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // キャプチャ停止中にキャプチャが走るのを防ぐため
-            device.OnPacketArrival -= OnPacketArrival;
-            await Task.Delay(500);
-            // キャプチャ停止
-            device.StopCapture();
-            device.Close();
-            
+            PcapClose();
+        
             Application.Exit();
         }
 
+        /// <summary>
+        /// Clear Bottun Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnClear_Click(object sender, EventArgs e)
         {
             txtDefault.Clear();
             txtDetail.Clear();
         }
 
+        /// <summary>
+        /// screensaver tail
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ssTimer_Tick(object sender, EventArgs e)
         {
             Process[] processList = Process.GetProcesses();
@@ -534,6 +478,11 @@ namespace ipmsg_alert
             }
         }
 
+        /// <summary>
+        /// screenlock tail
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         void SystemEvents_SessionSwitch(object sender, Microsoft.Win32.SessionSwitchEventArgs e)
         {
             if (e.Reason == SessionSwitchReason.SessionLock)
@@ -551,6 +500,10 @@ namespace ipmsg_alert
             }
         }
 
+        /// <summary>
+        /// stack balloon display
+        /// </summary>
+        /// <param name="tS"></param>
         void DisplayStackBalloon( List<string> tS )
         {
             string tipText = "";
@@ -566,6 +519,41 @@ namespace ipmsg_alert
             notifyIcon1.ShowBalloonTip(300000);
 
             tipStack.Clear();
+        }
+
+        /// <summary>
+        /// pcap close
+        /// </summary>
+        private void PcapClose()
+        {
+            // キャプチャ停止中にキャプチャが走るのを防ぐため
+            device.OnPacketArrival -= OnPacketArrival;
+
+            //await Task.Run(async () => {
+            //    await Task.Delay(500);
+            //            device.StopCapture();
+            //            device.Close();
+            //});
+
+            //await Task.Delay(500);
+            // キャプチャ停止
+            System.Threading.Thread.Sleep(200);
+            device.StopCapture();
+            device.Close();
+        }
+
+        private void PcapOpen()
+        {
+            networkIndex = appSettings.netWork;
+
+            device = LivePcapDeviceList.Instance[appSettings.netWork];
+            // ハンドラ設定
+            device.OnPacketArrival += OnPacketArrival;
+            // デバイスオープン
+            int readTimeoutMilliseconds = 1000;
+            device.Open(DeviceMode.Promiscuous, readTimeoutMilliseconds);
+            // キャプチャ開始
+            device.StartCapture();
         }
     }
 }

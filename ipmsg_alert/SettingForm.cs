@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ipmsg_alert.setting;
 using System.Text.RegularExpressions;
+using SharpPcap;
+using PacketDotNet;
 
 namespace ipmsg_alert
 {
@@ -16,7 +18,6 @@ namespace ipmsg_alert
     {
         static SettingForm fm;
         func fc = new func();
-        //public Dictionary<int, bool> returnDic = new Dictionary<int, bool>();
 
         static ipmsg_alert.setting retAppSettings = new ipmsg_alert.setting();
 
@@ -36,7 +37,14 @@ namespace ipmsg_alert
             radioMayuko.Checked = appSettings.mykFlg;
             txtIPaddr.Text = appSettings.ipAddr;
 
-            //returnDic = watchFlgDic;
+            foreach (var x in LivePcapDeviceList.Instance)
+            {
+                cmbNetWork.Items.Add(x.Interface.FriendlyName);
+            }
+
+            cmbNetWork.SelectedIndex = appSettings.netWork;
+            
+            toolTip1.SetToolTip(cmbNetWork,cmbNetWork.Items[0].ToString());
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -51,6 +59,7 @@ namespace ipmsg_alert
             retAppSettings.detailFlg = radioDetail.Checked;
             retAppSettings.mykFlg = radioMayuko.Checked;
             retAppSettings.ipAddr = txtIPaddr.Text;
+            retAppSettings.netWork = cmbNetWork.SelectedIndex;
 
             System.Xml.Serialization.XmlSerializer serializer1 =
                 new System.Xml.Serialization.XmlSerializer(typeof(ipmsg_alert.setting));
@@ -72,10 +81,7 @@ namespace ipmsg_alert
             fm = new SettingForm( retAppSettings );
             fm.StartPosition = FormStartPosition.CenterParent;
             fm.ShowDialog();
-            //var insDic = fm.returnDic;
             fm.Dispose();
-
-            //return insDic;
         }
 
         private void SettingForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -90,12 +96,12 @@ namespace ipmsg_alert
                 fc.CheckIpString(txtIPaddr.Text);
                 txtIPaddr.BackColor = Color.White;
                 ipErrorFlg = false;
-                labelIPCaution.Visible = false;
+                //labelIPCaution.Visible = false;
             }
             catch
             {
                 //MessageBox.Show(ex.Message);
-                labelIPCaution.Visible = true;
+                //labelIPCaution.Visible = true;
                 txtIPaddr.BackColor = Color.FromArgb(0xf0, 0xc7, 0xd3);
                 ipErrorFlg = true;
             }
