@@ -25,7 +25,7 @@ namespace ipmsg_alert
             System.Reflection.AssemblyName asmName  = assembly.GetName();
             System.Version                 version  = asmName.Version;
  
-            labelVer.Text = "Ver " + version.Major + "." + version.MinorRevision;
+            labelVer.Text = "Ver " + version.Major + "." + version.Minor + version.Build;
         }
 
         static public void showVersionForm()

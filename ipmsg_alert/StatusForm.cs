@@ -24,7 +24,8 @@ namespace ipmsg_alert
             foreach (var i in IPDic)
             {
                 // ホスト部が1オクテットのためそこだけ表示
-                txtIPView.AppendText(i.Value + ":" + fc.GetIPAddr(i.Key)[3] + Environment.NewLine);
+                //txtIPView.AppendText(i.Value + ":" + fc.GetIPAddr(i.Key)[3] + Environment.NewLine);
+                dgvStatus.Rows.Add(new string[]{i.Value, fc.GetIPAddr(i.Key)[3].ToString()});
             }
         }
 

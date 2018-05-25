@@ -29,8 +29,11 @@
         private void InitializeComponent()
         {
             this.btnClose = new System.Windows.Forms.Button();
-            this.txtIPView = new System.Windows.Forms.TextBox();
             this.labelIPCount = new System.Windows.Forms.Label();
+            this.dgvStatus = new System.Windows.Forms.DataGridView();
+            this.columnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.columnIP = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvStatus)).BeginInit();
             this.SuspendLayout();
             // 
             // btnClose
@@ -43,16 +46,6 @@
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
-            // txtIPView
-            // 
-            this.txtIPView.Location = new System.Drawing.Point(12, 12);
-            this.txtIPView.Multiline = true;
-            this.txtIPView.Name = "txtIPView";
-            this.txtIPView.ReadOnly = true;
-            this.txtIPView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtIPView.Size = new System.Drawing.Size(260, 209);
-            this.txtIPView.TabIndex = 1;
-            // 
             // labelIPCount
             // 
             this.labelIPCount.AutoSize = true;
@@ -62,17 +55,40 @@
             this.labelIPCount.TabIndex = 2;
             this.labelIPCount.Text = "User:";
             // 
+            // dgvStatus
+            // 
+            this.dgvStatus.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvStatus.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.columnName,
+            this.columnIP});
+            this.dgvStatus.Location = new System.Drawing.Point(12, 12);
+            this.dgvStatus.Name = "dgvStatus";
+            this.dgvStatus.RowTemplate.Height = 21;
+            this.dgvStatus.Size = new System.Drawing.Size(260, 209);
+            this.dgvStatus.TabIndex = 3;
+            // 
+            // columnName
+            // 
+            this.columnName.HeaderText = "Name";
+            this.columnName.Name = "columnName";
+            // 
+            // columnIP
+            // 
+            this.columnIP.HeaderText = "IP";
+            this.columnIP.Name = "columnIP";
+            // 
             // StatusForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Controls.Add(this.dgvStatus);
             this.Controls.Add(this.labelIPCount);
-            this.Controls.Add(this.txtIPView);
             this.Controls.Add(this.btnClose);
             this.Name = "StatusForm";
             this.ShowIcon = false;
             this.Text = "Status";
+            ((System.ComponentModel.ISupportInitialize)(this.dgvStatus)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -81,7 +97,9 @@
         #endregion
 
         private System.Windows.Forms.Button btnClose;
-        private System.Windows.Forms.TextBox txtIPView;
         private System.Windows.Forms.Label labelIPCount;
+        private System.Windows.Forms.DataGridView dgvStatus;
+        private System.Windows.Forms.DataGridViewTextBoxColumn columnName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn columnIP;
     }
 }

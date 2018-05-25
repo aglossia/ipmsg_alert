@@ -94,8 +94,7 @@ namespace ipmsg_alert
 
                 if (appSettings.hostName != System.Net.Dns.GetHostName())
                 {
-                    MessageBox.Show(
-                        "ネットワーク接続が別マシンの設定となっています。\nIP、ネットワーク設定を確認してください。",
+                    MessageBox.Show("ネットワーク接続が別マシンの設定となっています。\nIP、ネットワーク設定を確認してください。",
                         "ipmsg_alert",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
@@ -264,7 +263,7 @@ namespace ipmsg_alert
                             if(localIPDic.ContainsKey(dstIP)) sendName = localIPDic[dstIP];
                             responseMessage = sendName + " に送るで";
                             nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
-                            flg = appSettings.sendFlg;
+                            if(appSettings.sendFlg) flg = true;
                         }
 
                         break;
@@ -276,7 +275,7 @@ namespace ipmsg_alert
                             noticeNameIP = srcIP;
                             responseMessage = "開けたで";
                             nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
-                            flg = appSettings.openFlg;
+                            if(appSettings.openFlg) flg = true;
                         }
 
                         break;
@@ -288,7 +287,7 @@ namespace ipmsg_alert
                             noticeNameIP = dstIP;
                             responseMessage = "から受け取ったで";
                             nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
-                            flg = appSettings.receiveFlg;
+                            if(appSettings.receiveFlg) flg = true;
                         }
 
                         break;
@@ -314,7 +313,7 @@ namespace ipmsg_alert
                             nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
                             localIPDic.Remove(srcIP);
                             
-                            flg = appSettings.leaveFlg;
+                            if(appSettings.leaveFlg) flg = true;
 
                             flg2 = true;
                         }
