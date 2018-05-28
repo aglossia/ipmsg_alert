@@ -77,6 +77,7 @@ namespace ipmsg_alert
             ssTimer.Interval = 1000;
 
             SystemEvents.SessionSwitch += new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
+            SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
 
             // configファイルがある場合 setting を読み込む
             if (File.Exists(Constants.configFileName))
@@ -498,6 +499,24 @@ namespace ipmsg_alert
                 ssTimer.Start();
                 ssFlg = false;
                 if(tipStack.Count != 0) DisplayStackBalloon(tipStack);
+            }
+        }
+
+        void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            switch (e.Mode)
+            {
+                case PowerModes.Suspend:
+                    // スリープ直前
+                    PcapClose();
+                    break;
+                case PowerModes.Resume:
+                    PcapOpen();
+                    // 復帰直後
+                    break;
+                case PowerModes.StatusChange:
+                    // バッテリーや電源に関する通知があった
+                    break;
             }
         }
 
