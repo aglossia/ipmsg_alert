@@ -72,7 +72,7 @@ namespace ipmsg_alert
             
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.ActiveControl = this.btnExit;
-            picBoxMayuko.ImageLocation = @"myk.bmp";
+            picBoxMayuko.ImageLocation = @"resource\myk.bmp";
             ssTimer.Enabled = true;
             ssTimer.Interval = 1000;
 
@@ -296,13 +296,15 @@ namespace ipmsg_alert
 
                     case 0x3:
 
-                        if (!localIPDic.ContainsKey(srcIP)) localIPDic.Add(srcIP,splittedName[0]);
+                        if (!localIPDic.ContainsKey(srcIP)) localIPDic.Add(srcIP,nameMessage);
                         responseMessage = "おるよー";
                         flg2 = true;
                         break;
 
                     case 0x1:
-                        if (!localIPDic.ContainsKey(srcIP)) localIPDic.Add(srcIP,splittedName[0]);
+                        // 自分がブロードキャストした場合statusを初期化する
+                        if (srcIP == appSettings.ipAddr) localIPDic.Clear();
+                        if (!localIPDic.ContainsKey(srcIP)) localIPDic.Add(srcIP,nameMessage);
                         responseMessage = "おるかー？";
                         flg2 = true;
                         break;

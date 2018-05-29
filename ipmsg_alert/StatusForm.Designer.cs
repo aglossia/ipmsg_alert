@@ -58,6 +58,7 @@
             this.txtIPView.Multiline = true;
             this.txtIPView.Name = "txtIPView";
             this.txtIPView.ReadOnly = true;
+            this.txtIPView.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtIPView.Size = new System.Drawing.Size(260, 209);
             this.txtIPView.TabIndex = 3;
             // 

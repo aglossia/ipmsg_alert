@@ -43,7 +43,9 @@
             this.cmbNetWork = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // btnCloseSF
@@ -149,7 +151,8 @@
             this.txtIPaddr.Name = "txtIPaddr";
             this.txtIPaddr.Size = new System.Drawing.Size(119, 19);
             this.txtIPaddr.TabIndex = 10;
-            this.txtIPaddr.Leave += new System.EventHandler(this.txtIPaddr_Leave);
+            this.txtIPaddr.TextChanged += new System.EventHandler(this.txtIPaddr_TextChanged);
+            this.txtIPaddr.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtIPaddr_KeyDown);
             // 
             // label1
             // 
@@ -178,6 +181,14 @@
             this.label2.TabIndex = 14;
             this.label2.Text = "NW";
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(199, 250);
+            this.pictureBox1.TabIndex = 15;
+            this.pictureBox1.TabStop = false;
+            // 
             // SettingForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -193,12 +204,14 @@
             this.Controls.Add(this.chboxReceive);
             this.Controls.Add(this.chboxSend);
             this.Controls.Add(this.btnCloseSF);
+            this.Controls.Add(this.pictureBox1);
             this.Name = "SettingForm";
             this.ShowIcon = false;
             this.Text = "Setting";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.SettingForm_FormClosed);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -220,5 +233,6 @@
         private System.Windows.Forms.ComboBox cmbNetWork;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

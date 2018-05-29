@@ -11,6 +11,7 @@ using ipmsg_alert.setting;
 using System.Text.RegularExpressions;
 using SharpPcap;
 using PacketDotNet;
+using System.IO;
 
 namespace ipmsg_alert
 {
@@ -18,13 +19,27 @@ namespace ipmsg_alert
     {
         static SettingForm fm;
         func fc = new func();
-
+        Dictionary<string, string> bmpDic = new Dictionary<string, string>();
         static ipmsg_alert.setting retAppSettings = new ipmsg_alert.setting();
 
         bool ipErrorFlg = false;
 
         public SettingForm( ipmsg_alert.setting appSettings )
         {
+            if (Directory.Exists(@"resource"))
+            {
+                string[] files = System.IO.Directory.GetFiles(@"resource", "*", System.IO.SearchOption.AllDirectories);
+
+                foreach (string filePath in files)
+                {
+                    var tmp = Path.GetExtension(filePath);
+                    if (Path.GetExtension(filePath) == ".bmp")
+                    {
+                        bmpDic.Add(Path.GetFileNameWithoutExtension(filePath), filePath);
+                    }
+                }
+            }
+
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
 
@@ -90,12 +105,13 @@ namespace ipmsg_alert
             this.Close();
         }
 
-        private void txtIPaddr_Leave(object sender, EventArgs e)
+        private void txtIPaddr_TextChanged(object sender, EventArgs e)
         {
             try
             {
                 fc.CheckIpString(txtIPaddr.Text);
                 txtIPaddr.BackColor = Color.White;
+                btnCloseSF.Enabled = true;
                 ipErrorFlg = false;
                 //labelIPCaution.Visible = false;
             }
@@ -104,7 +120,26 @@ namespace ipmsg_alert
                 //MessageBox.Show(ex.Message);
                 //labelIPCaution.Visible = true;
                 txtIPaddr.BackColor = Color.FromArgb(0xf0, 0xc7, 0xd3);
+                btnCloseSF.Enabled = false;
                 ipErrorFlg = true;
+            }
+        }
+
+        async private void txtIPaddr_KeyDown(object sender, KeyEventArgs e)
+        {
+            string bmpName = txtIPaddr.Text;
+
+            if (e.KeyData == Keys.Enter)
+            {
+                if (bmpDic.ContainsKey(bmpName))
+                {
+                    pictureBox1.BringToFront();
+                    pictureBox1.ImageLocation = bmpDic[bmpName];
+                    await Task.Delay(1000);
+                    pictureBox1.SendToBack();
+
+                    pictureBox1.ImageLocation = null;
+                }
             }
         }
     }
