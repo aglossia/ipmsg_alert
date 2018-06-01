@@ -23,7 +23,7 @@ namespace ipmsg_alert
         static func fc = new func();
         string screensaver = fc.GetScreenSaverName();
         int networkIndex;
-        
+
         LivePcapDevice device;
         static char[] separator = {':'};
         static char[] separatorName = {'\0'};
@@ -43,7 +43,6 @@ namespace ipmsg_alert
             public bool mykFlg { get; set; }
             public string ipAddr { get; set; }
             public int netWork { get; set; }
-            public int viewTime { get; set; }
 
             public setting()
             {
@@ -57,24 +56,10 @@ namespace ipmsg_alert
                 mykFlg = false;
                 ipAddr = "255.255.255.255";
                 netWork = 0;
-                viewTime = 1000;
-            }
-        }
-
-        public class ConnectStatus
-        {
-            public bool cast { get; set; }
-            public bool attach { get; set; }
-
-            public ConnectStatus()
-            {
-                cast = false;
-                attach = false;
             }
         }
 
         setting appSettings = new setting();
-        ConnectStatus appConnectStatus = new ConnectStatus();
 
         public ipmsg_alert()
         {
@@ -84,30 +69,31 @@ namespace ipmsg_alert
             this.Text = "[DEBUG]";
             notifyIcon1.Text = "[DEBUG]";
 #endif
-            // 付けてみたけど鬱陶しいからはずした
-            dot_timer.Tick -= dot_timer_Tick;
+            
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.ActiveControl = this.btnExit;
             picBoxMayuko.ImageLocation = @"resource\myk.bmp";
-            this.MaximizeBox = false;
+            ssTimer.Enabled = true;
+            ssTimer.Interval = 1000;
 
-            SystemEvents.SessionSwitch += new SessionSwitchEventHandler( SystemEvents_SessionSwitch );
-            SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler( SystemEvents_PowerModeChanged );
+            SystemEvents.SessionSwitch += new SessionSwitchEventHandler(SystemEvents_SessionSwitch);
+            SystemEvents.PowerModeChanged += new PowerModeChangedEventHandler(SystemEvents_PowerModeChanged);
 
             // configファイルがある場合 setting を読み込む
-            if ( File.Exists( Constants.configFileName ) )
+            if (File.Exists(Constants.configFileName))
             {
                 System.Xml.Serialization.XmlSerializer serializer = 
-                    new System.Xml.Serialization.XmlSerializer( typeof( setting ) );
-
+                    new System.Xml.Serialization.XmlSerializer(typeof(setting));
+                
                 System.IO.StreamReader sr = new System.IO.StreamReader(
-                    Constants.configFileName, new System.Text.UTF8Encoding( false ) );
+                    Constants.configFileName, new System.Text.UTF8Encoding(false));
 
                 //XMLファイルから読み込み、逆シリアル化する
-                appSettings = ( setting )serializer.Deserialize( sr );
-
+                appSettings = (setting)serializer.Deserialize(sr);
+                
                 sr.Close();
 
-                if ( appSettings.hostName != System.Net.Dns.GetHostName() )
+                if (appSettings.hostName != System.Net.Dns.GetHostName())
                 {
                     MessageBox.Show(
                         "ネットワーク接続が別マシンの設定となっています。\nIP、ネットワーク設定を確認してください。",
@@ -127,12 +113,11 @@ namespace ipmsg_alert
 
         private void notifyIcon1_DoubleClick(object sender, EventArgs e)
         {
-            dot_timer.Start();
             // フォームを表示する
             this.Visible = true;
             
             // 現在の状態が最小化の状態であれば通常の状態に戻す
-            if ( this.WindowState == FormWindowState.Minimized )
+            if (this.WindowState == FormWindowState.Minimized)
             {   
                 this.WindowState = FormWindowState.Normal;
             }
@@ -143,9 +128,8 @@ namespace ipmsg_alert
 
         private void ipmsg_alert_ClientSizeChanged(object sender, EventArgs e)
         {
-            if ( this.WindowState == System.Windows.Forms.FormWindowState.Minimized )
+            if (this.WindowState == System.Windows.Forms.FormWindowState.Minimized)
             {
-                dot_timer.Stop();
                 // フォームが最小化の状態であればフォームを非表示にする
                 this.Hide();
                 // トレイリストのアイコンを表示する
@@ -155,7 +139,7 @@ namespace ipmsg_alert
 
         private void ipmsg_alert_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if ( e.CloseReason == CloseReason.UserClosing )
+            if (e.CloseReason == CloseReason.UserClosing)
             {
                 e.Cancel = true;
                 this.Hide();
@@ -183,9 +167,8 @@ namespace ipmsg_alert
         /// <param name="e"></param>
         private void btnWatchOn_Click(object sender, EventArgs e)
         {
-            if ( !device.Opened )
+            if (!device.Opened)
             {
-                //dot_timer.Start();
                 PcapOpen();
 
                 label1.Text = "watching...";
@@ -199,9 +182,8 @@ namespace ipmsg_alert
         /// <param name="e"></param>
         private void btnWatchOff_Click(object sender, EventArgs e)
         {
-            if ( device.Opened )
+            if (device.Opened)
             {
-                //dot_timer.Stop();
                 PcapClose();
 
                 label1.Text = "stop";
@@ -235,10 +217,10 @@ namespace ipmsg_alert
             string[] splitted;
             string[] splittedName;
             
-            int srcPort = ( e.Packet.Data[34] << 8 ) + e.Packet.Data[35];
-            int dstPort = ( e.Packet.Data[36] << 8 ) + e.Packet.Data[37];
+            int srcPort = (e.Packet.Data[34] << 8) + e.Packet.Data[35];
+            int dstPort = (e.Packet.Data[36] << 8) + e.Packet.Data[37];
 
-            if( ( srcPort == 2425 ) && ( dstPort == 2425 ) )
+            if((srcPort == 2425) && (dstPort == 2425))
             {
                 //Invoke(new Action<bool>((b) => btnExit.Enabled = b),false);
                 // 必要な変数を宣言する
@@ -285,15 +267,6 @@ namespace ipmsg_alert
                             nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
                             flg = appSettings.sendFlg;
                         }
-                        else
-                        {
-                            // srcIPが自分ではないから相手からの送信
-
-                            // マルチキャスト？
-                            if ((command & 0x800) != 0) appConnectStatus.cast = true;
-                            // 添付あり？
-                            if ((command & 0x200000) != 0) appConnectStatus.attach = true;
-                        }
 
                         break;
 
@@ -313,19 +286,6 @@ namespace ipmsg_alert
                         if (srcIP == appSettings.ipAddr)
                         {
                             notice = string.Format("[{0}] 受信したよ", dtNow.ToLongTimeString());
-
-                            if (appConnectStatus.cast)
-                            {
-                                notice += " [多]";
-                                appConnectStatus.cast = false;
-                            }
-
-                            if (appConnectStatus.attach)
-                            {
-                                notice += " [添]";
-                                appConnectStatus.attach = false;
-                            }
-
                             noticeNameIP = dstIP;
                             responseMessage = "から受け取ったで";
                             nameMessage = localIPDic.ContainsKey(noticeNameIP) ? localIPDic[noticeNameIP] : "誰？";
@@ -369,11 +329,14 @@ namespace ipmsg_alert
                         break;
                 }
 
-                if ( flg )
+                if (flg)
                 {
-                    if ( ssFlg )
+                    if (ssFlg)
                     {
-                        tipStack.Add( string.Format("{0} : {1}", notice, nameMessage ));
+                        tipStack.Add(string.Format("{0} : {1}",
+                        notice,
+                        nameMessage
+                        ));
                     }
                     else
                     {
@@ -390,7 +353,7 @@ namespace ipmsg_alert
 
                 }
 
-                if ( flg || flg2 )
+                if (flg || flg2)
                 {
                     Invoke(new Action<string>((msg) => txtDefault.AppendText( msg + Environment.NewLine )),
                         string.Format("[{0}] {1} < {2}",
@@ -425,7 +388,7 @@ namespace ipmsg_alert
                 PcapClose();
                 PcapOpen();
             }
-            
+
             txtDefault.Visible = appSettings.defaultFlg;
             txtDetail.Visible = appSettings.detailFlg;
             picBoxMayuko.Visible = appSettings.mykFlg;
@@ -613,21 +576,6 @@ namespace ipmsg_alert
             device.Open(DeviceMode.Promiscuous, readTimeoutMilliseconds);
             // キャプチャ開始
             device.StartCapture();
-        }
-
-        private void dot_timer_Tick(object sender, EventArgs e)
-        {
-            if (device.Opened)
-            {
-                if (label1.Text == "watching...")
-                {
-                    label1.Text = "watching";
-                }
-                else
-                {
-                    label1.Text += ".";
-                }
-            }
         }
     }
 }

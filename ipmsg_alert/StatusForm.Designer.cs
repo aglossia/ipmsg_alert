@@ -35,6 +35,7 @@
             // 
             // btnClose
             // 
+            this.btnClose.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.btnClose.Location = new System.Drawing.Point(105, 227);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(75, 23);
@@ -45,6 +46,7 @@
             // 
             // labelIPCount
             // 
+            this.labelIPCount.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.labelIPCount.AutoSize = true;
             this.labelIPCount.Location = new System.Drawing.Point(216, 232);
             this.labelIPCount.Name = "labelIPCount";
@@ -54,6 +56,9 @@
             // 
             // txtIPView
             // 
+            this.txtIPView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtIPView.Location = new System.Drawing.Point(12, 12);
             this.txtIPView.Multiline = true;
             this.txtIPView.Name = "txtIPView";

@@ -19,6 +19,9 @@ namespace ipmsg_alert
         {
             InitializeComponent();
 
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+
             labelIPCount.Text += IPDic.Count.ToString();
 
             foreach (var i in IPDic)
